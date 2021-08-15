@@ -27,7 +27,8 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 
 add_executable(tarragon-test)
 target_sources(tarragon-test PRIVATE
-    noisetests.cpp
+    moduletests.cpp
+    generatortests.cpp
 )
 
 set_target_properties(tarragon-test PROPERTIES

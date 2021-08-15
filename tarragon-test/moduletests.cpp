@@ -37,4 +37,16 @@ namespace tarragon::tests
 
         ASSERT_THAT(add({0.0, 0.0, 0.0}), Eq(5.0));
     }
+
+    TEST(NoiseModuleTests, Blend)
+    {
+        auto blend1 = Blend(Constant(1), Constant(2), Constant(0));
+        ASSERT_THAT(blend1({}), Eq(1));
+
+        auto blend2 = Blend(Constant(1), Constant(2), Constant(1));
+        ASSERT_THAT(blend2({}), Eq(2));
+
+        auto blend3 = Blend(Constant(1), Constant(2), Constant(0.5));
+        ASSERT_THAT(blend3({}), Eq(1.5));
+    }
 }
