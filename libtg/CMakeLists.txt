@@ -1,19 +1,23 @@
 cmake_minimum_required(VERSION 3.20)
 
-add_library(libtg)
-target_sources(libtg PRIVATE
+set(TARGET_NAME libtg)
+set(${TARGET_NAME}_FILES
     include/synchronized.h
-    include/noise/generator.h noise/generator.cpp
-    include/noise/modules.h noise/modules.cpp
+    include/noise/generator.h src/noise/generator.cpp
+    include/noise/modules.h src/noise/modules.cpp
 )
 
-set_target_properties(libtg PROPERTIES
+add_library(${TARGET_NAME} STATIC)
+target_sources(libtg PRIVATE ${${TARGET_NAME}_FILES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${TARGET_NAME}_FILES})
+
+set_target_properties(${TARGET_NAME} PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
     DEBUG_POSTFIX "d"
 )
-target_include_directories(libtg PUBLIC include/)
-target_link_libraries(libtg PUBLIC
+target_include_directories(${TARGET_NAME} PUBLIC include/)
+target_link_libraries(${TARGET_NAME} PUBLIC
     glm::glm
 )

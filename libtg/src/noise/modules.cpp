@@ -12,6 +12,14 @@ namespace tarragon::noise
         };
     }
 
+    NoiseFunction Add(NoiseFunction source0, NoiseFunction source1)
+    {
+        return [=](glm::dvec3 const& pos)
+        {
+            return source0(pos) + source1(pos);
+        };
+    }
+
     NoiseFunction Constant(double value)
     {
         return [=](glm::dvec3 const& pos)
@@ -20,11 +28,11 @@ namespace tarragon::noise
         };
     }
 
-    NoiseFunction Add(NoiseFunction source0, NoiseFunction source1)
+    NoiseFunction Blend(NoiseFunction source0, NoiseFunction source1, NoiseFunction control)
     {
         return [=](glm::dvec3 const& pos)
         {
-            return source0(pos) + source1(pos);
+
         };
     }
 }
