@@ -10,6 +10,7 @@
 #include <glm/gtx/vec_swizzle.hpp>
 #include <glm/gtx/component_wise.hpp>
 
+#include "common.h"
 #include "noise/generator.h"
 
 namespace
@@ -190,8 +191,10 @@ namespace tarragon::noise
 
     Module Constant(double value)
     {
-        return [=](glm::dvec3)
+        return [=](glm::dvec3 pos)
         {
+            UNUSED_PARAM(pos);
+
             return value;
         };
     }

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 set(TARGET_NAME libtg)
 set(${TARGET_NAME}_FILES
+    include/common.h
     include/synchronized.h
     include/noise/generator.h src/noise/generator.cpp
     include/noise/modules.h src/noise/modules.cpp

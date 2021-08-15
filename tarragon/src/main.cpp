@@ -4,6 +4,7 @@
 #include "glad/gl.h"
 #include <GLFW/glfw3.h>
 
+#include <common.h>
 #include "framelimit.h"
 
 namespace
@@ -15,6 +16,9 @@ namespace
 
 	void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
+		UNUSED_PARAM(scancode);
+		UNUSED_PARAM(mods);
+
 		std::cout << "Key event: " << key << std::endl;
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -22,12 +26,17 @@ namespace
 
 	void glfw_framebuffersize_callback(GLFWwindow* window, int width, int height)
 	{
+		UNUSED_PARAM(window);
+
 		glViewport(0, 0, width, height);
 	}
 }
 
 int main(int argc, const char **argv)
 {
+	UNUSED_PARAM(argc);
+	UNUSED_PARAM(argv);
+
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit())
 	{
