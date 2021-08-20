@@ -32,7 +32,7 @@ target_sources(tarragon-test PRIVATE
 )
 
 set_target_properties(tarragon-test PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
 )
