@@ -5,7 +5,7 @@ set(${TARGET_NAME}_FILES
     include/clock.h
     include/component.h
     include/framelimit.h
-    include/uniformwriter.h
+    include/shader.h
     include/KHR/khrplatform.h
     include/camera.h src/camera.cpp
     include/input.h src/input.cpp

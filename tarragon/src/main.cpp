@@ -15,6 +15,7 @@
 #include "framelimit.h"
 #include "clock.h"
 #include "input.h"
+#include "shader.h"
 
 using namespace tarragon;
 
@@ -174,11 +175,7 @@ int main(int argc, const char **argv)
 	glVertexArrayAttribBinding(vao, 0, 0);
 	glVertexArrayAttribBinding(vao, 1, 1);
 
-	GLuint prog = glCreateProgram();
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-const std::string vertexShaderSource =
+const std::string_view vertexShaderSource =
 R"xx(
 #version 460
 
@@ -199,7 +196,7 @@ void main()
 
 )xx";
 
-const std::string fragmentShaderSource =
+const std::string_view fragmentShaderSource =
 R"xx(
 #version 460
 
@@ -214,31 +211,10 @@ void main()
 
 )xx";
 
-	auto vertexSourcePtr = (const GLchar*)vertexShaderSource.data();
-	glShaderSource(vertexShader, 1, &vertexSourcePtr, nullptr);
-	glCompileShader(vertexShader);
-
-	auto fragmentSourcePtr = (const GLchar*)fragmentShaderSource.data();
-	glShaderSource(fragmentShader, 1, &fragmentSourcePtr, nullptr);
-	glCompileShader(fragmentShader);
-
-	char log[1024];
-	memset(log, 0, 1024);
-
-	glGetShaderInfoLog(vertexShader, 1024, nullptr, log);
-	std::cout << log << std::endl;
-	glGetShaderInfoLog(fragmentShader, 1024, nullptr, log);
-	std::cout << log << std::endl;
-
-	glAttachShader(prog, vertexShader);
-	glAttachShader(prog, fragmentShader);
-	glLinkProgram(prog);
-	glDetachShader(prog, vertexShader);
-	glDetachShader(prog, fragmentShader);
-
-	GLint modelLocation = glGetUniformLocation(prog, "model");
-	GLint viewLocation = glGetUniformLocation(prog, "view");
-	GLint projectionLocation = glGetUniformLocation(prog, "projection");
+	Shader shader;
+	shader.add_shader(ShaderType::Vertex, vertexShaderSource);
+	shader.add_shader(ShaderType::Fragment, fragmentShaderSource);
+	shader.link();
 
 	glm::mat4 model = glm::scale(glm::identity<glm::mat4>(), glm::vec3{ 1.2f });
 	glm::mat4 view = glm::lookAtRH(glm::vec3{ 2.0f, 2.0f, 2.0f }, glm::vec3{ 0.0f, 0.0f, 0.0f }, glm::vec3{ 0.0f, 0.0f, 1.0f });
@@ -258,10 +234,10 @@ void main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glBindVertexArray(vao);
-		glUseProgram(prog);
-		glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+		shader.use();
+		shader["model"].write(model);
+		shader["view"].write(view);
+		shader["projection"].write(projection);
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, nullptr);
 
