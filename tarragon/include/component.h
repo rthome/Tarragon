@@ -1,13 +1,17 @@
 #pragma once
 
 #include "clock.h"
-#include "input.h"
 
 namespace tarragon
 {
+    class System
+    {
+
+    };
+
     class UpdateComponent
     {
     public:
-        virtual void update(Clock const& clock, Input const& input) = 0;
+        virtual void update(Clock const& clock) = 0;
     };
 }

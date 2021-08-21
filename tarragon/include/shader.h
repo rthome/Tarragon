@@ -5,6 +5,8 @@
 
 #include "glad/gl.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace tarragon
 {
     enum class ShaderType : GLenum

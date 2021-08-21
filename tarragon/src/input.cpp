@@ -69,6 +69,30 @@ namespace tarragon
         return mousebutton_state(button) == KeyState::Down;
     }
 
+    void Input::set_cursorstate(CursorState state)
+    {
+        if (m_cursorstate == state)
+            return;
+
+        if (state == CursorState::Normal)
+        {
+            glfwSetInputMode(m_pwindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+        else if (state == CursorState::Locked)
+        {
+            glfwSetInputMode(m_pwindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            if (glfwRawMouseMotionSupported())
+                glfwSetInputMode(m_pwindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        }
+
+        m_cursorstate = state;
+
+        double x, y;
+        glfwGetCursorPos(m_pwindow, &x, &y);
+        m_mouse_pos = glm::vec2{ static_cast<float>(x), static_cast<float>(y) };
+        m_mouse_delta = {};
+    }
+
     KeyState Input::key_state(Key key) const
     {
         auto keystate = m_key_states.find(key);

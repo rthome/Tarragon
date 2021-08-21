@@ -5,6 +5,7 @@
 #include <glm/vec2.hpp>
 #include <GLFW/glfw3.h>
 
+#include "component.h"
 #include "signal.h"
 
 namespace tarragon
@@ -174,13 +175,20 @@ namespace tarragon
         Middle = GLFW_MOUSE_BUTTON_MIDDLE,
     };
 
-    class Input final
+    enum class CursorState
+    {
+        Normal,
+        Locked,
+    };
+
+    class Input final : public UpdateComponent
     {
     private:
         GLFWwindow *m_pwindow;
         
         glm::vec2 m_mouse_pos{};
         glm::vec2 m_mouse_delta{};
+        CursorState m_cursorstate;
 
         std::unordered_map<Key, KeyState> m_key_states;
         std::unordered_map<MouseButton, KeyState> m_mousebutton_states;
@@ -219,6 +227,11 @@ namespace tarragon
             glfwSetWindowUserPointer(m_pwindow, nullptr);
         }
 
+        virtual void update(Clock const&) override
+        {
+            m_mouse_delta = {};
+        }
+
         auto& on_key() const { return m_key_sig; }
         auto& on_mousebutton() const { return m_mousebutton_sig; }
         auto& on_mousecursor() const { return m_cursor_sig; }
@@ -229,6 +242,8 @@ namespace tarragon
         KeyState mousebutton_state(MouseButton button) const;
         bool mousebutton_is_up(MouseButton button) const;
         bool mousebutton_is_down(MouseButton button) const;
+        
+        void set_cursorstate(CursorState state);
 
         KeyState key_state(Key key) const;
         bool key_is_up(Key key) const;

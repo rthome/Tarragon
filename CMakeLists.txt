@@ -11,9 +11,9 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
 if (MSVC)
-    add_compile_options(/W4 /WX)
+    add_compile_options(/W4 )
 else()
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+    add_compile_options(-Wall -Wextra -pedantic )
 endif()
 
 add_subdirectory(libtg)
