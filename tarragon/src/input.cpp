@@ -43,11 +43,20 @@ namespace tarragon
 
     void Input::handle_cursorpos_callback(float xpos, float ypos)
     {
-        auto mouse_pos_old = m_mouse_pos;
-        m_mouse_pos = glm::vec2{ xpos, ypos, };
-        m_mouse_delta = m_mouse_pos - mouse_pos_old;
+        glm::vec2 position{xpos, ypos};
+        auto delta = position - m_mouse_pos;
 
-        m_cursor_sigsource.publish(m_mouse_pos, m_mouse_delta);
+        m_cursor_sigsource.publish(position, delta);
+    }
+
+    void Input::update(Clock const& clock)
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(m_pwindow, &xpos, &ypos);
+
+        auto mouse_pos_old = m_mouse_pos;
+        m_mouse_pos = glm::vec2{ static_cast<float>(xpos), static_cast<float>(ypos), };
+        m_mouse_delta = m_mouse_pos - mouse_pos_old;
     }
 
     KeyState Input::mousebutton_state(MouseButton button) const

@@ -26,6 +26,12 @@ namespace tarragon
         void update_view();
 
     public:
+        Camera()
+        {
+            update_projection();
+            update_view();
+        }
+
         glm::mat4 const& view() const { return m_view; }
         glm::mat4 const& projection() const { return m_projection; }
 

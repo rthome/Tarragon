@@ -227,10 +227,7 @@ namespace tarragon
             glfwSetWindowUserPointer(m_pwindow, nullptr);
         }
 
-        virtual void update(Clock const&) override
-        {
-            m_mouse_delta = {};
-        }
+        virtual void update(Clock const&) override;
 
         auto& on_key() const { return m_key_sig; }
         auto& on_mousebutton() const { return m_mousebutton_sig; }
