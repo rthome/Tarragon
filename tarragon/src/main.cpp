@@ -151,43 +151,24 @@ int main(int argc, const char **argv)
 
 	glfwSetFramebufferSizeCallback(window, glfw_framebuffersize_callback);
 
-	std::vector<Vertex> vertices
-	{
-		{ 
-			{-1.0f, -0.5f, 0.0f},
-			{1.0f, 0.0f, 0.0f, 1.0f},
-			{}
-		},
-		{ 
-			{1.0f, -0.5f, 0.0f},
-			{0.0f, 1.0f, 0.0f, 1.0f},
-			{}
-		},
-		{ 
-			{0.0f, 1.0f, 0.0f},
-			{0.0f, 0.0f, 1.0f, 1.0f},
-			{}
-		},
-		{ 
-			{0.0f, 0.0f, 1.0f},
-			{1.0f, 1.0f, 0.0f, 1.0f},
-			{}
-		},
-	};
+	Module source = Cell(CellType::Quadratic, 2.0, 0.1, true);
 
-	const std::vector<uint32_t> indices{
-		0, 1, 2,
-		0, 1, 3,
-		1, 2, 3,
-		0, 2, 3
-	};
+	Chunk chunk{glm::dvec3{1.0, 2.0, 3.0}};
+	chunk.fill_from(source);
+
+	ChunkMesher mesher{0.5};
+	ChunkMesher::MeshData mesh_data = mesher.mesh(chunk.data());
+
+	std::vector<Vertex> vertices{};
+	for (size_t i = 0; i < mesh_data.Positions.size(); i++)
+		vertices.push_back({mesh_data.Positions.at(i), mesh_data.Colors.at(i), {}});
 
 	GLuint vertexBuffer, indexBuffer;
 	glCreateBuffers(1, &vertexBuffer);
 	glCreateBuffers(1, &indexBuffer);
 
 	glNamedBufferStorage(vertexBuffer, sizeof(Vertex) * vertices.size(), vertices.data(), 0);
-	glNamedBufferStorage(indexBuffer, sizeof(uint32_t) * indices.size(), indices.data(), 0);
+	glNamedBufferStorage(indexBuffer, sizeof(uint32_t) * mesh_data.Indices.size(), mesh_data.Indices.data(), 0);
 
 	GLuint vao;
 	glCreateVertexArrays(1, &vao);
@@ -243,9 +224,9 @@ int main(int argc, const char **argv)
 			{
 				for (int x = -10; x < 10; x += 3)
 				{
-					auto model = glm::translate(glm::identity<glm::mat4>(), glm::vec3{ x, y, z });
+					auto model = glm::translate(glm::identity<glm::mat4>(), glm::vec3{chunk.origin()});
 					shader["model"].write(model);
-					glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, nullptr);
+					glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh_data.Indices.size()), GL_UNSIGNED_INT, nullptr);
 				}
 			}
 		}

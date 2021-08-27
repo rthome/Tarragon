@@ -2,15 +2,16 @@ cmake_minimum_required(VERSION 3.20)
 
 set(TARGET_NAME tarragon)
 set(${TARGET_NAME}_FILES
+    include/camera.h src/camera.cpp
+    include/chunk.h src/chunk.cpp
     include/clock.h
-    include/chunk.h
     include/component.h
     include/framelimit.h
-    include/shader.h
-    include/KHR/khrplatform.h
-    include/camera.h src/camera.cpp
     include/input.h src/input.cpp
+    include/shader.h
+    include/shadersource.h
     include/glad/gl.h src/gl.c
+    include/KHR/khrplatform.h
     src/main.cpp
 )
 
