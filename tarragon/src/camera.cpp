@@ -1,6 +1,7 @@
 #include "camera.h"
 
 #include <glm/gtx/common.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/quaternion_transform.hpp>
 
 namespace tarragon

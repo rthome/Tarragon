@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 #include <glm/gtx/std_based_type.hpp>
 
 #include "noise/modules.h"
@@ -86,6 +87,7 @@ namespace tarragon
     public:
         struct MeshData
         {
+            glm::vec3 WorldPosition;
             std::vector<glm::vec3> Positions;
             std::vector<glm::vec4> Colors;
             std::vector<uint32_t> Indices;

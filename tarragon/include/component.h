@@ -14,4 +14,10 @@ namespace tarragon
     public:
         virtual void update(Clock const& clock) = 0;
     };
+
+    class DrawComponent
+    {
+    public:
+        virtual void draw() = 0;
+    };
 }

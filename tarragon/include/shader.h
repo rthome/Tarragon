@@ -47,6 +47,9 @@ namespace tarragon
             m_program = glCreateProgram();
         }
 
+        Shader(Shader const&) = delete;
+        Shader& operator= (Shader const&) = delete;
+
         ~Shader()
         {
             for (auto &&shader : m_shaders)

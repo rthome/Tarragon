@@ -1,49 +1,38 @@
 #include "input.h"
 
+#include <cassert>
+
 #include "common.h"
 
 namespace tarragon
 {
-    void Input::glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-        Input* input = reinterpret_cast<Input*>(glfwGetWindowUserPointer(window));
-        if (input)
-            input->handle_key_callback(static_cast<Key>(key), scancode, static_cast<KeyState>(action), static_cast<KeyModifier>(mods));
-    }
-
-	void Input::glfw_mousebutton_callback(GLFWwindow* window, int button, int action, int mods)
-    {
-        Input* input = reinterpret_cast<Input*>(glfwGetWindowUserPointer(window));
-        if (input)
-            input->handle_mousebutton_callback(static_cast<MouseButton>(button), static_cast<KeyState>(action), static_cast<KeyModifier>(mods));
-    }
-
-	void Input::glfw_cursorpos_callback(GLFWwindow* window, double xpos, double ypos)
-    {
-        Input* input = reinterpret_cast<Input*>(glfwGetWindowUserPointer(window));
-        if (input)
-            input->handle_cursorpos_callback(static_cast<float>(xpos), static_cast<float>(ypos));
-    }
-
-    void Input::handle_key_callback(Key key, int scancode, KeyState action, KeyModifier mods)
+    void Input::handle_key_callback(int key, int scancode, int action, int mods)
     {
         UNUSED_PARAM(scancode);
 
-        m_key_states[key] = action;
+        auto kkey = static_cast<Key>(key);
+        auto kaction = static_cast<KeyState>(action);
+        auto kmods = static_cast<KeyModifier>(mods);
 
-        m_key_sigsource.publish(key, action, mods);
+        m_key_states[kkey] = kaction;
+
+        m_key_sigsource.publish(kkey, kaction, kmods);
     }
 
-    void Input::handle_mousebutton_callback(MouseButton button, KeyState action, KeyModifier mods)
+    void Input::handle_mousebutton_callback(int button, int action, int mods)
     {
-        m_mousebutton_states[button] = action;
+        auto mbutton = static_cast<MouseButton>(button);
+        auto maction = static_cast<KeyState>(action);
+        auto mmods = static_cast<KeyModifier>(mods);
 
-        m_mousebutton_sigsource.publish(button, action, mods);
+        m_mousebutton_states[mbutton] = maction;
+
+        m_mousebutton_sigsource.publish(mbutton, maction, mmods);
     }
 
-    void Input::handle_cursorpos_callback(float xpos, float ypos)
+    void Input::handle_cursorpos_callback(double xpos, double ypos)
     {
-        glm::vec2 position{xpos, ypos};
+        glm::vec2 position{static_cast<float>(xpos), static_cast<float>(ypos)};
         auto delta = position - m_mouse_pos;
 
         m_cursor_sigsource.publish(position, delta);
@@ -51,6 +40,8 @@ namespace tarragon
 
     void Input::update(Clock const& clock)
     {
+        UNUSED_PARAM(clock);
+
         double xpos, ypos;
         glfwGetCursorPos(m_pwindow, &xpos, &ypos);
 

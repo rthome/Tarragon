@@ -183,6 +183,8 @@ namespace tarragon
 
     class Input final : public UpdateComponent
     {
+        friend class Engine;
+
     private:
         GLFWwindow *m_pwindow;
         
@@ -200,13 +202,10 @@ namespace tarragon
         SignalSource<glm::vec2 const&, glm::vec2 const&> m_cursor_sigsource;
         mutable Signal<glm::vec2 const&, glm::vec2 const&> m_cursor_sig;
 
-        static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	    static void glfw_mousebutton_callback(GLFWwindow* window, int button, int action, int mods);
-	    static void glfw_cursorpos_callback(GLFWwindow* window, double xpos, double ypos);
-
-        void handle_key_callback(Key key, int scancode, KeyState action, KeyModifier mods);
-        void handle_mousebutton_callback(MouseButton button, KeyState action, KeyModifier mods);
-        void handle_cursorpos_callback(float xpos, float ypos);
+        // Called directly by Engine
+        void handle_key_callback(int key, int scancode, int action, int mods);
+        void handle_mousebutton_callback(int button, int action, int mods);
+        void handle_cursorpos_callback(double xpos, double ypos);
 
     public:
         explicit Input(GLFWwindow *window)
@@ -214,18 +213,11 @@ namespace tarragon
             , m_key_sigsource{}, m_key_sig{ m_key_sigsource }
             , m_mousebutton_sigsource{}, m_mousebutton_sig{ m_mousebutton_sigsource }
             , m_cursor_sigsource{}, m_cursor_sig{ m_cursor_sigsource }
+        { }
+        virtual ~Input() = default;
 
-        {
-            glfwSetWindowUserPointer(m_pwindow, reinterpret_cast<void*>(this));
-            glfwSetKeyCallback(m_pwindow, &Input::glfw_key_callback);
-            glfwSetMouseButtonCallback(m_pwindow, &Input::glfw_mousebutton_callback);
-            glfwSetCursorPosCallback(m_pwindow, &Input::glfw_cursorpos_callback);
-        }
-
-        ~Input()
-        {
-            glfwSetWindowUserPointer(m_pwindow, nullptr);
-        }
+        Input(Input const&) = delete;
+        Input& operator= (Input const&) = delete;
 
         virtual void update(Clock const&) override;
 

@@ -31,6 +31,8 @@ namespace tarragon
             update_projection();
             update_view();
         }
+        Camera(Camera const&) = delete;
+        Camera& operator= (Camera const&) = delete;
 
         glm::mat4 const& view() const { return m_view; }
         glm::mat4 const& projection() const { return m_projection; }
@@ -60,6 +62,10 @@ namespace tarragon
             : m_pcamera{pcamera}
             , m_pinput{pinput}
         { }
+        FreelookCamera(FreelookCamera const&) = delete;
+        FreelookCamera& operator= (FreelookCamera const&) = delete;
+
+        virtual ~FreelookCamera() = default;
 
         void set_position(glm::vec3 const& position) { m_position = position; }
 
