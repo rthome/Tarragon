@@ -62,10 +62,15 @@ namespace tarragon
             : m_pcamera{pcamera}
             , m_pinput{pinput}
         { }
+        virtual ~FreelookCamera() = default;
+
         FreelookCamera(FreelookCamera const&) = delete;
         FreelookCamera& operator= (FreelookCamera const&) = delete;
-
-        virtual ~FreelookCamera() = default;
+        
+        virtual void initialize() override
+        {
+            
+        }
 
         void set_position(glm::vec3 const& position) { m_position = position; }
 

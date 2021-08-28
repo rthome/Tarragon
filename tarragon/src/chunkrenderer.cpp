@@ -51,7 +51,7 @@ namespace tarragon
 	    glVertexArrayAttribBinding(m_vao, 1, 1);
     }
 
-    void ChunkRenderer::init_shader()
+    void ChunkRenderer::initialize()
     {
         m_shader.add_shader(ShaderType::Vertex, VERTEX_SOURCE);
 	    m_shader.add_shader(ShaderType::Fragment, FRAGMENT_SOURCE);
@@ -67,7 +67,7 @@ namespace tarragon
 
         ChunkBindingsPtr pbinding = std::make_shared<ChunkBindings>();
         pbinding->upload(&mesh_data);
-        m_bindings.push_back(pbinding);
+        m_bindings.push_back(pbinding); 
     }
 
     void ChunkRenderer::update(Clock const& clock)

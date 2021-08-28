@@ -9,13 +9,19 @@ namespace tarragon
 
     };
 
-    class UpdateComponent
+    class Component
+    {
+    public:
+        virtual void initialize() = 0;
+    };
+
+    class UpdateComponent : public Component
     {
     public:
         virtual void update(Clock const& clock) = 0;
     };
 
-    class DrawComponent
+    class DrawComponent : public Component
     {
     public:
         virtual void draw() = 0;

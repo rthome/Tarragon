@@ -62,7 +62,7 @@ namespace tarragon
         ChunkRenderer(ChunkRenderer const&) = delete;
         ChunkRenderer& operator= (ChunkRenderer const&) = delete;
 
-        void init_shader();
+        virtual void initialize() override;
 
         virtual void update(Clock const& clock) override;
         virtual void draw() override;

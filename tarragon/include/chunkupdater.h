@@ -12,6 +12,11 @@ namespace tarragon
         ChunkUpdater(ChunkUpdater const&) = delete;
         ChunkUpdater& operator= (ChunkUpdater const&) = delete;
 
+        virtual void initialize() override
+        {
+            
+        }
+
         virtual void update(Clock const& clock) override;
     };
 }

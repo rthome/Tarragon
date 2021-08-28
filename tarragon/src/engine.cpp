@@ -136,14 +136,16 @@ namespace tarragon
 		m_pcamera->set_resolution(1280, 720);
 
 		m_pinput = std::make_unique<Input>(window());
-		m_pinput->set_cursorstate(CursorState::Normal);
+		m_pinput->initialize();
 
 		m_pfreecam = std::make_unique<FreelookCamera>(camera(), input());
+		m_pfreecam->initialize();
 
 		m_pchunk_renderer = std::make_unique<ChunkRenderer>(camera());
-		m_pchunk_renderer->init_shader();
+		m_pchunk_renderer->initialize();
 
 		m_pchunk_updater = std::make_unique<ChunkUpdater>();
+		m_pchunk_updater->initialize();
 
 		return true;
 	}

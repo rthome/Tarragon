@@ -219,6 +219,11 @@ namespace tarragon
         Input(Input const&) = delete;
         Input& operator= (Input const&) = delete;
 
+        virtual void initialize() override
+        {
+            set_cursorstate(CursorState::Normal);
+        }
+
         virtual void update(Clock const&) override;
 
         auto& on_key() const { return m_key_sig; }
