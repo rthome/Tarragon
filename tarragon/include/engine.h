@@ -19,8 +19,8 @@ namespace tarragon
         static void glfw_error_callback(int error, const char *description);
         static void glfw_framebuffersize_callback(GLFWwindow *window, int width, int height);
         static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	    static void glfw_mousebutton_callback(GLFWwindow* window, int button, int action, int mods);
-	    static void glfw_cursorpos_callback(GLFWwindow* window, double xpos, double ypos);
+        static void glfw_mousebutton_callback(GLFWwindow* window, int button, int action, int mods);
+        static void glfw_cursorpos_callback(GLFWwindow* window, double xpos, double ypos);
 
         bool m_is_initialized = false;
 

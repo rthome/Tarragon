@@ -16,6 +16,9 @@ namespace tarragon
     public:
         Clock()
             : m_start{ glfwGetTime() }
+            , m_frame_count{}
+            , m_last_update{}
+            , m_last_delta{}
         { }
 
         void update()

@@ -16,24 +16,68 @@ using namespace tarragon::noise;
 
 namespace tarragon
 {
-    class ChunkData final
+    template <size_t width>
+    class ChunkExtents final
     {
     public:
-        // Total chunk size is width*width*width
+        static constexpr double BLOCKSIZE = 1.0;
+
+    private:
+        // bottom front left, where block {0,0,0} is located
+        glm::dvec3 m_origin;
+
+    public:
+        ChunkExtents(glm::dvec3 const& origin)
+            : m_origin{ origin }
+        {
+        }
+
+        // Offsets to go from origin to the center of each face (or center)
+        glm::dvec3 left_offset() const { return glm::dvec3{ 0.0, 0.5, 0.5 } * BLOCKSIZE * width; }
+        glm::dvec3 right_offset() const { return glm::dvec3{ 1.0, 0.5, 0.5 } * BLOCKSIZE * width; }
+        glm::dvec3 front_offset() const { return glm::dvec3{ 0.5, 0.0, 0.5 } * BLOCKSIZE * width; }
+        glm::dvec3 back_offset() const { return glm::dvec3{ 0.5, 1.0, 0.5 } * BLOCKSIZE * width; }
+        glm::dvec3 bottom_offset() const { return glm::dvec3{ 0.5, 0.5, 0.0 } * BLOCKSIZE * width; }
+        glm::dvec3 top_offset() const { return glm::dvec3{ 0.5, 0.5, 1.0 } * BLOCKSIZE * width; }
+        glm::dvec3 center_offset() const { return glm::dvec3{ 0.5, 0.5, 0.5 } * BLOCKSIZE * width; }
+
+        glm::dvec3 const& origin() const { return m_origin; }
+        glm::dvec3 center() const { return m_origin + center_offset(); }
+
+        // Absolute positions of the centers each of the sides
+        glm::dvec3 left_face() const { return m_origin + left_offset(); }
+        glm::dvec3 right_face() const { return m_origin + right_offset(); }
+        glm::dvec3 front_face() const { return m_origin + front_offset(); }
+        glm::dvec3 back_face() const { return m_origin + back_offset(); }
+        glm::dvec3 bottom_face() const { return m_origin + bottom_offset(); }
+        glm::dvec3 top_face() const { return m_origin + top_offset(); }
+
+        glm::dvec3 world_position_at_index(glm::size3 const& index) const
+        {
+            return origin() + (glm::dvec3{ index } * BLOCKSIZE);
+        }
+    };
+
+    class Chunk final
+    {
+    public:
         static constexpr size_t WIDTH = 16;
 
+        using Extents = ChunkExtents<WIDTH>;
         using DataArray = std::array<double, WIDTH * WIDTH * WIDTH>;
 
     private:
-        DataArray m_data;
+        Extents m_extents;
+        std::unique_ptr<DataArray> m_pdata;
 
     public:
-        DataArray const& data() const { return m_data; }
+        Chunk(glm::dvec3 center_position)
+            : m_extents{ center_position }
+            , m_pdata{ std::make_unique<DataArray>() }
+        { }
 
-        auto begin() { return std::begin(m_data); }
-        auto end() { return std::end(m_data); }
-        auto cbegin() const { return std::cbegin(m_data); }
-        auto cend() const { return std::cend(m_data); }
+        Extents const& extents() const { return m_extents; }
+        const DataArray* data() const { return m_pdata.get(); }
 
         size_t index_for(glm::size3 const& idx) const
         {
@@ -47,37 +91,14 @@ namespace tarragon
         double get_value(glm::size3 const& idx) const
         {
             auto fidx = index_for(idx);
-            return m_data.at(fidx);
+            return m_pdata->at(fidx);
         }
 
         void set_value(glm::size3 const& idx, double value)
         {
             auto fidx = index_for(idx);
-            m_data.at(fidx) = value;
+            m_pdata->at(fidx) = value;
         }
-    };
-
-    class Chunk final
-    {
-    private:
-        glm::dvec3 m_chunk_origin;
-        std::unique_ptr<ChunkData> m_chunk_data;
-
-    public:
-        Chunk(glm::dvec3 chunk_origin)
-            : m_chunk_origin{ chunk_origin }
-            , m_chunk_data{ std::make_unique<ChunkData>() }
-        { }
-
-        Chunk(glm::dvec3 chunk_origin, std::unique_ptr<ChunkData>&& chunk_data)
-            : m_chunk_origin{ chunk_origin }
-            , m_chunk_data{ std::move(chunk_data) }
-        { }
-
-        glm::dvec3 const& origin() const { return m_chunk_origin; }
-
-        ChunkData* data() { return m_chunk_data.get(); }
-        const ChunkData* data() const { return m_chunk_data.get(); }
 
         void fill_from(Module source);
     };
@@ -151,6 +172,6 @@ namespace tarragon
             : m_air_threshold{air_threshold}
         { }
 
-        MeshData mesh(ChunkData *pchunk);
+        MeshData mesh(Chunk *pchunk);
     };
 }

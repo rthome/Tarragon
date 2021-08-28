@@ -190,7 +190,7 @@ namespace tarragon
         
         glm::vec2 m_mouse_pos{};
         glm::vec2 m_mouse_delta{};
-        CursorState m_cursorstate;
+        CursorState m_cursorstate{};
 
         std::unordered_map<Key, KeyState> m_key_states;
         std::unordered_map<MouseButton, KeyState> m_mousebutton_states;

@@ -4,54 +4,55 @@ namespace tarragon
 {
     void Chunk::fill_from(Module source)
     {
-        for (size_t z = 0; z < ChunkData::WIDTH; z++)
+        for (size_t z = 0; z < Chunk::WIDTH; z++)
         {
-            for (size_t y = 0; y < ChunkData::WIDTH; y++)
+            for (size_t y = 0; y < Chunk::WIDTH; y++)
             {
-                for (size_t x = 0; x < ChunkData::WIDTH; x++)
+                for (size_t x = 0; x < Chunk::WIDTH; x++)
                 {
-                    auto position_offset = glm::dvec3{x, y, z} - ((ChunkData::WIDTH - 1) / 2.0);
+                    glm::size3 index{ x, y, z };
 
-                    auto sample_position = m_chunk_origin + position_offset;
+                    auto sample_position = extents().world_position_at_index(index);
                     auto value = source(sample_position);
-                    m_chunk_data->set_value(glm::size3{x, y, z}, value);
+                    set_value(index, value);
                 }
             }
         }
     }
 
 
-    ChunkMesher::MeshData ChunkMesher::mesh(ChunkData *pchunk)
+    ChunkMesher::MeshData ChunkMesher::mesh(Chunk *pchunk)
     {
         MeshData data{};
         uint32_t index{};
 
-        for (size_t z = 0; z < ChunkData::WIDTH; z++)
+        for (size_t z = 0; z < Chunk::WIDTH; z++)
         {
-            for (size_t y = 0; y < ChunkData::WIDTH; y++)
+            for (size_t y = 0; y < Chunk::WIDTH; y++)
             {
-                for (size_t x = 0; x < ChunkData::WIDTH; x++)
+                for (size_t x = 0; x < Chunk::WIDTH; x++)
                 {
                     glm::size3 position{x, y, z};
+
                     auto value = pchunk->get_value(position);
                     if (value < m_air_threshold)
                         continue;
 
                     for (size_t i = 0; i < Neighbours6.size(); i++)
                     {
-                        auto offset = Neighbours6.at(i);
+                        auto& offset = Neighbours6.at(i);
                         glm::ivec3 neighbour_pos = glm::ivec3{position} + offset;
 
-                        if (neighbour_pos.x < 0 || neighbour_pos.x >= static_cast<int>(ChunkData::WIDTH) ||
-                            neighbour_pos.y < 0 || neighbour_pos.y >= static_cast<int>(ChunkData::WIDTH) ||
-                            neighbour_pos.z < 0 || neighbour_pos.z >= static_cast<int>(ChunkData::WIDTH) ||
-                            pchunk->get_value(glm::size3{neighbour_pos}) < m_air_threshold)
+                        if (((neighbour_pos.x < 0 || neighbour_pos.x >= static_cast<int>(Chunk::WIDTH))
+                            || (neighbour_pos.y < 0 || neighbour_pos.y >= static_cast<int>(Chunk::WIDTH))
+                            || (neighbour_pos.z < 0 || neighbour_pos.z >= static_cast<int>(Chunk::WIDTH)))
+                            || pchunk->get_value(glm::size3{neighbour_pos}) < m_air_threshold)
                         {
                             auto& quad = NeighbourFaces.at(i);
                             for (size_t j = 0; j < quad.size(); j++)
                             {
-                                data.Positions.push_back(glm::vec3{glm::ivec3{position} + quad.at(j)} - ((ChunkData::WIDTH - 1) / 2.0f));
-                                data.Colors.push_back(glm::vec4{x / static_cast<float>(ChunkData::WIDTH), y / static_cast<float>(ChunkData::WIDTH), z / static_cast<float>(ChunkData::WIDTH), 1.0f});
+                                data.Positions.push_back(glm::vec3{glm::ivec3{position} + quad.at(j)});
+                                data.Colors.push_back(glm::vec4{x / static_cast<float>(Chunk::WIDTH), y / static_cast<float>(Chunk::WIDTH), z / static_cast<float>(Chunk::WIDTH), 1.0f});
                             }
 
                             data.Indices.push_back(index + 0);
@@ -66,7 +67,8 @@ namespace tarragon
                 }
             }
         }
-
+        
+        data.WorldPosition = glm::vec3{ pchunk->extents().origin() };
         return data;
     }
 }

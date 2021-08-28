@@ -198,4 +198,12 @@ namespace tarragon::noise
             return value;
         };
     }
+
+    Module Multiply(Module source0, Module source1)
+    {
+        return [=](glm::dvec3 pos)
+        {
+            return source0(pos) * source1(pos);
+        };
+    }
 }
