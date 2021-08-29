@@ -68,9 +68,14 @@ namespace tarragon
             glShaderSource(shader, 1, &psource, nullptr);
             glCompileShader(shader);
 
-            char info_log[512];
-            glGetShaderInfoLog(shader, sizeof(info_log), nullptr, info_log);
-            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, shader, GL_DEBUG_SEVERITY_HIGH, -1, info_log);
+            GLint compile_status{};
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_status);
+            if (compile_status == GL_FALSE)
+            {
+                char info_log[512];
+                glGetShaderInfoLog(shader, sizeof(info_log), nullptr, info_log);
+                glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, shader, GL_DEBUG_SEVERITY_HIGH, -1, info_log);
+            }
 
             m_shaders.push_back(shader);
         }
