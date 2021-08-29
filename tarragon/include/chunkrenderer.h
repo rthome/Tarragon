@@ -17,7 +17,7 @@ namespace tarragon
     {
     	glm::vec3 Position;
     	glm::vec4 Color;
-    	glm::vec2 TexCoord;
+    	glm::vec3 Normal;
     };
 
     class ChunkBindings

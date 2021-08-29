@@ -189,6 +189,8 @@ namespace tarragon
         glDebugMessageCallback(gl_message_callback, nullptr);
 
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         if (!initialize_components())

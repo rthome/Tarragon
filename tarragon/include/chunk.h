@@ -111,56 +111,59 @@ namespace tarragon
             glm::vec3 WorldPosition;
             std::vector<glm::vec3> Positions;
             std::vector<glm::vec4> Colors;
+            std::vector<glm::vec3> Normals;
             std::vector<uint32_t> Indices;
         };
 
         using QuadArray = std::array<glm::ivec3, 4>;
 
-        static constexpr std::array<glm::ivec3, 6> Neighbours6 {
-            glm::ivec3(1, 0, 0),    //right
-            glm::ivec3(-1, 0, 0),   //left
-            glm::ivec3(0, 1, 0),    //top
-            glm::ivec3(0, -1, 0),   //bottom
-            glm::ivec3(0, 0, 1),    //front
-            glm::ivec3(0, 0, -1)    //back
+        static constexpr std::array<glm::ivec3, 6> Neighbours6
+        {
+            glm::ivec3{1, 0, 0},  //right
+            glm::ivec3{-1, 0, 0}, //left
+            glm::ivec3{0, 1, 0},  //top
+            glm::ivec3{0, -1, 0}, //bottom
+            glm::ivec3{0, 0, 1},  //front
+            glm::ivec3{0, 0, -1}  //back
         };
 
-        static constexpr std::array<QuadArray, 6> NeighbourFaces {
+        static constexpr std::array<QuadArray, 6> NeighbourFaces
+        {
             QuadArray { //right
-                glm::ivec3(1, 1, 1),
-                glm::ivec3(1, 1, 0),
-                glm::ivec3(1, 0, 1),
-                glm::ivec3(1, 0, 0),
+                glm::ivec3{1, 1, 1},
+                glm::ivec3{1, 1, 0},
+                glm::ivec3{1, 0, 1},
+                glm::ivec3{1, 0, 0},
             },
             QuadArray { //left
-                glm::ivec3(0, 1, 0),
-                glm::ivec3(0, 1, 1),
-                glm::ivec3(0, 0, 0),
-                glm::ivec3(0, 0, 1),
+                glm::ivec3{0, 1, 0},
+                glm::ivec3{0, 1, 1},
+                glm::ivec3{0, 0, 0},
+                glm::ivec3{0, 0, 1},
             },
             QuadArray { //top
-                glm::ivec3(0, 1, 0),
-                glm::ivec3(1, 1, 0),
-                glm::ivec3(0, 1, 1),
-                glm::ivec3(1, 1, 1),
+                glm::ivec3{0, 1, 0},
+                glm::ivec3{1, 1, 0},
+                glm::ivec3{0, 1, 1},
+                glm::ivec3{1, 1, 1},
             },
             QuadArray { //bottom
-                glm::ivec3(1, 0, 0),
-                glm::ivec3(0, 0, 0),
-                glm::ivec3(1, 0, 1),
-                glm::ivec3(0, 0, 1),
+                glm::ivec3{1, 0, 0},
+                glm::ivec3{0, 0, 0},
+                glm::ivec3{1, 0, 1},
+                glm::ivec3{0, 0, 1},
             },
             QuadArray { //front
-                glm::ivec3(0, 1, 1), 
-                glm::ivec3(1, 1, 1),
-                glm::ivec3(0, 0, 1),
-                glm::ivec3(1, 0, 1),
+                glm::ivec3{0, 1, 1}, 
+                glm::ivec3{1, 1, 1},
+                glm::ivec3{0, 0, 1},
+                glm::ivec3{1, 0, 1},
             },
             QuadArray { //back
-                glm::ivec3(1, 1, 0),
-                glm::ivec3(0, 1, 0),
-                glm::ivec3(1, 0, 0),
-                glm::ivec3(0, 0, 0),
+                glm::ivec3{1, 1, 0},
+                glm::ivec3{0, 1, 0},
+                glm::ivec3{1, 0, 0},
+                glm::ivec3{0, 0, 0},
             },
         };
 

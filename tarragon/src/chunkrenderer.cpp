@@ -31,7 +31,7 @@ namespace tarragon
         {
             std::vector<Vertex> vertices{};
             for (size_t i = 0; i < pdata->Positions.size(); i++)
-                vertices.push_back({pdata->Positions.at(i), pdata->Colors.at(i), {}});
+                vertices.push_back({pdata->Positions.at(i), pdata->Colors.at(i), pdata->Normals.at(i)});
 
             m_index_count = static_cast<GLsizei>(pdata->Indices.size());
             m_model = glm::translate(glm::identity<glm::mat4>(), pdata->WorldPosition);
@@ -50,8 +50,13 @@ namespace tarragon
         glVertexArrayVertexBuffer(m_vao, 1, m_vertex_buffer, offsetof(Vertex, Color), sizeof(Vertex));
         glVertexArrayAttribFormat(m_vao, 1, 4, GL_FLOAT, GL_FALSE, 0);
 
+        glEnableVertexArrayAttrib(m_vao, 2);
+        glVertexArrayVertexBuffer(m_vao, 2, m_vertex_buffer, offsetof(Vertex, Normal), sizeof(Vertex));
+        glVertexArrayAttribFormat(m_vao, 2, 3, GL_FLOAT, GL_FALSE, 0);
+
         glVertexArrayAttribBinding(m_vao, 0, 0);
         glVertexArrayAttribBinding(m_vao, 1, 1);
+        glVertexArrayAttribBinding(m_vao, 2, 2);
     }
 
     void ChunkRenderer::initialize()
@@ -60,21 +65,24 @@ namespace tarragon
         m_shader.add_shader(ShaderType::Fragment, FRAGMENT_SOURCE);
         m_shader.link();
 
-        Module source = Billow(0.006, 1.9, 6, 0.5, NoiseQuality::Standard, 123);
-        ChunkMesher mesher{4};
+        Module source = Billow(0.05, 2, 6, 0.5, NoiseQuality::Best, 0);
+        ChunkMesher mesher{0};
 
-        for (int x = -50; x < 50; x += Chunk::WIDTH)
+        for (int x = -33; x < 33; x += Chunk::WIDTH)
         {
-            for (int y = -50; y < 50; y += Chunk::WIDTH)
+            for (int y = -33; y < 33; y += Chunk::WIDTH)
             {
-                Chunk chunk{glm::dvec3{x + x*0.001, y + y*0.001, 0.0}};
-                chunk.fill_from(source);
+                for (int z = -33; z < 33; z += Chunk::WIDTH)
+                {
+                    Chunk chunk{ glm::dvec3{x + x * 0.0001, y + y * 0.0001, z + z * 0.0001f} };
+                    chunk.fill_from(source);
 
-                ChunkMesher::MeshData mesh_data = mesher.mesh(&chunk);
+                    ChunkMesher::MeshData mesh_data = mesher.mesh(&chunk);
 
-                ChunkBindingsPtr pbinding = std::make_shared<ChunkBindings>();
-                pbinding->upload(&mesh_data);
-                m_bindings.push_back(pbinding);
+                    ChunkBindingsPtr pbinding = std::make_shared<ChunkBindings>();
+                    pbinding->upload(&mesh_data);
+                    m_bindings.push_back(pbinding);
+                }
             }
         }
     }

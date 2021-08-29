@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <string_view>
 #include <vector>
 
@@ -66,6 +67,10 @@ namespace tarragon
             auto psource = static_cast<const GLchar *>(source.data());
             glShaderSource(shader, 1, &psource, nullptr);
             glCompileShader(shader);
+
+            char info_log[512];
+            glGetShaderInfoLog(shader, sizeof(info_log), nullptr, info_log);
+            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, shader, GL_DEBUG_SEVERITY_HIGH, -1, info_log);
 
             m_shaders.push_back(shader);
         }
