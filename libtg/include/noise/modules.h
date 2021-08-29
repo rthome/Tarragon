@@ -24,8 +24,8 @@ namespace tarragon::noise
 
     struct ControlPoint
     {
-        double input_value;
-        double output_value;
+        double Input;
+        double Output;
     };
 
     constexpr NoiseQuality DefaultQuality = NoiseQuality::Standard;
@@ -59,6 +59,7 @@ namespace tarragon::noise
     constexpr double RidgedMultiDefaultFrequency = 1.0;
     constexpr double RidgedMultiDefaultLacunarity = 2.0;
     constexpr uint32_t RidgedMultiDefaultOctaveCount = 6;
+    constexpr uint32_t RidgedMultiMaxOctaveCount = 30;
 
     constexpr double RotateDefaultAngle = 0.0;
 
