@@ -5,6 +5,7 @@ set(${TARGET_NAME}_FILES
     include/common.h
     include/signal.h
     include/synchronized.h
+    include/noise/common.h
     include/noise/generator.h src/noise/generator.cpp
     include/noise/modules.h src/noise/modules.cpp
 )

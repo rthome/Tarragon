@@ -7,12 +7,16 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include <glm/ext/quaternion_double.hpp>
+#include <glm/ext/quaternion_common.hpp>
+#include <glm/ext/quaternion_transform.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/vec_swizzle.hpp>
 #include <glm/gtx/component_wise.hpp>
 #include <glm/gtx/spline.hpp>
 
 #include "common.h"
+#include "noise/common.h"
 #include "noise/generator.h"
 
 namespace
@@ -349,7 +353,7 @@ namespace tarragon::noise
             for (int32_t octave = 0; static_cast<uint32_t>(octave) < octave_count; octave++)
             {
                 int32_t octave_seed = (seed + octave) & INT32_MAX;
-                auto signal = gradient_coherent_noise_3d(pos, seed, quality);
+                auto signal = gradient_coherent_noise_3d(pos, octave_seed, quality);
                 value += signal * current_persistence;
 
                 pos *= lacunarity;
@@ -387,7 +391,7 @@ namespace tarragon::noise
             {
                 // Get the coherent-noise value.
                 int32_t octave_seed = (seed + octave) & 0x7fffffff;
-                auto signal = gradient_coherent_noise_3d(pos, seed, quality);
+                auto signal = gradient_coherent_noise_3d(pos, octave_seed, quality);
 
                 // Make the ridges.
                 signal = offset - glm::abs(signal);
@@ -414,6 +418,200 @@ namespace tarragon::noise
             }
 
             return (value * 1.25) - 1.0;
+        };
+    }
+
+    Module Rotate(Module source, double xdegrees, double ydegrees, double zdegrees)
+    {
+        constexpr glm::dquat quat_id = glm::identity<glm::quat>();
+
+        auto qx = glm::rotate(quat_id, glm::radians(xdegrees), glm::dvec3{ 1.0, 0.0, 0.0 });
+        auto qy = glm::rotate(quat_id, glm::radians(ydegrees), glm::dvec3{ 0.0, 1.0, 0.0 });
+        auto qz = glm::rotate(quat_id, glm::radians(zdegrees), glm::dvec3{ 0.0, 0.0, 1.0 });
+
+        auto rotation = qx * qy * qz;
+
+        return [source, rotation](glm::dvec3 pos)
+        {
+            auto rotated_pos = rotation * pos;
+            return source(rotated_pos);
+        };
+    }
+
+    Module ScaleBias(Module source, double scale, double bias)
+    {
+        return [=](glm::dvec3 pos)
+        {
+            return source(pos) * scale + bias;
+        };
+    }
+
+    Module ScalePoint(Module source, glm::dvec3 const& scale_factor)
+    {
+        return [=](glm::dvec3 pos)
+        {
+            return source(pos * scale_factor);
+        };
+    }
+
+    Module Select(Module source0, Module source1, Module control,
+        double lower_bound, double upper_bound, double edge_falloff)
+    {
+        return [=](glm::dvec3 pos)
+        {
+            auto control_value = control(pos);
+            if (edge_falloff > 0.0)
+            {
+                if (control_value < (lower_bound - edge_falloff))
+                {
+                    // The output value from the control module is below the selector
+                    // threshold; return the output value from the first source module.
+                    return source0(pos);
+                }
+                else if (control_value < (lower_bound + edge_falloff))
+                {
+                    // The output value from the control module is near the lower end of the
+                    // selector threshold and within the smooth curve. Interpolate between
+                    // the output values from the first and second source modules.
+                    auto lower_curve = lower_bound - edge_falloff;
+                    auto upper_curve = lower_bound + edge_falloff;
+                    auto alpha = scurve3((control_value - lower_curve) / (upper_curve / lower_curve));
+                    return glm::mix(source0(pos), source1(pos), alpha);
+                }
+                else if (control_value < (upper_bound - edge_falloff))
+                {
+                    // The output value from the control module is within the selector
+                    // threshold; return the output value from the second source module.
+                    return source1(pos);
+                }
+                else if (control_value < (upper_bound + edge_falloff))
+                {
+                    // The output value from the control module is near the upper end of the
+                    // selector threshold and within the smooth curve. Interpolate between
+                    // the output values from the first and second source modules.
+                    auto lower_curve = upper_bound - edge_falloff;
+                    auto upper_curve = upper_bound + edge_falloff;
+                    auto alpha = scurve3((control_value - lower_curve) / (upper_curve / lower_curve));
+                    return glm::mix(source1(pos), source0(pos), alpha);
+                }
+                else
+                {
+                    // Output value from the control module is above the selector threshold;
+                    // return the output value from the first source module.
+                    return source0(pos);
+                }
+            }
+            else
+            {
+                if (control_value < lower_bound || control_value > upper_bound)
+                    return source0(pos);
+                else
+                    return source1(pos);
+            }
+        };
+    }
+
+    Module Spheres(double frequency)
+    {
+        return [=](glm::dvec3 pos)
+        {
+            pos *= frequency;
+
+            auto center_dist = glm::length(pos);
+            auto inner_sphere_dist = center_dist - glm::floor(center_dist);
+            auto outer_sphere_dist = 1.0 - inner_sphere_dist;
+            auto nearest_dist = glm::min(inner_sphere_dist, outer_sphere_dist);
+            return 1.0 - (nearest_dist * 4.0); // Puts it in the -1.0 to +1.0 range.
+        };
+    }
+
+    Module Terrace(Module source, double const* control_points, size_t control_point_count, bool invert_terraces)
+    {
+        assert(control_points != nullptr);
+
+        std::vector<double> control_point_vec{ control_points, control_points + control_point_count };
+
+        return [source, control_point_vec, invert_terraces](glm::dvec3 pos)
+        {
+            auto source_value = source(pos);
+
+            // Find the first element in the control point array that has a value
+            // larger than the output value from the source module.
+            size_t index{};
+            for (index = 0; index < control_point_vec.size(); index++)
+            {
+                if (source_value < control_point_vec.at(index))
+                    break;
+            }
+
+            // Find the two nearest control points so that we can map their values
+            // onto a quadratic curve.
+            auto index0 = glm::clamp(index - 1, 0ull, control_point_vec.size() - 1);
+            auto index1 = glm::clamp(index, 0ull, control_point_vec.size() - 1);
+
+            // If some control points are missing (which occurs if the output value from
+            // the source module is greater than the largest value or less than the
+            // smallest value of the control point array), get the value of the nearest
+            // control point and exit now.
+            if (index0 == index1)
+                return control_point_vec.at(index1);
+
+            // Compute the alpha value used for linear interpolation.
+            auto value0 = control_point_vec.at(index0);
+            auto value1 = control_point_vec.at(index1);
+            auto alpha = (source_value - value0) / (value1 - value0);
+            if (invert_terraces)
+            {
+                alpha = 1.0 - alpha;
+                std::swap(value0, value1);
+            }
+
+            // Squaring the alpha produces the terrace effect.
+            alpha *= alpha;
+
+            // Now perform the linear interpolation given the alpha value.
+            return glm::mix(value0, value1, alpha);
+        };
+    }
+
+    Module TranslatePoint(Module source, glm::dvec3 const& translation)
+    {
+        return [=](glm::dvec3 pos)
+        {
+            return source(pos + translation);
+        };
+    }
+
+    Module Turbulence(Module source, double frequency, double power, double roughness, int32_t seed)
+    {
+        auto xdistort = Perlin(frequency, PerlinDefaultLacunarity, roughness, PerlinDefaultPersistence, DefaultQuality, seed);
+        auto ydistort = Perlin(frequency, PerlinDefaultLacunarity, roughness, PerlinDefaultPersistence, DefaultQuality, seed + 1);
+        auto zdistort = Perlin(frequency, PerlinDefaultLacunarity, roughness, PerlinDefaultPersistence, DefaultQuality, seed + 2);
+        
+        static constexpr glm::dvec3 offset0{ 12414.0 / 65536.0, 65124.0 / 65536.0, 31337.0 / 65536.0 };
+        static constexpr glm::dvec3 offset1{ 26519.0 / 65536.0, 18128.0 / 65536.0, 60493.0 / 65536.0 };
+        static constexpr glm::dvec3 offset2{ 53820.0 / 65536.0, 11213.0 / 65536.0, 44845.0 / 65536.0 };
+
+        return [=](glm::dvec3 pos)
+        {
+            // Get the values from the three Perlin noise modules and
+            // add each value to each coordinate of the input value. There are also
+            // some offsets added to the coordinates of the input values. This prevents
+            // the distortion modules from returning zero if the (x, y, z) coordinates,
+            // when multiplied by the frequency, are near an integer boundary. This is
+            // due to a property of gradient coherent noise, which returns zero at
+            // integer boundaries.
+            glm::dvec3 pos0{ pos + offset0 }, pos1{ pos + offset1 }, pos2{ pos + offset2 };
+            glm::dvec3 distorted_pos = pos + power * glm::dvec3{ xdistort(pos0), ydistort(pos1), zdistort(pos2) };
+            return source(distorted_pos);
+        };
+    }
+
+    Module White(int32_t scale, int32_t seed)
+    {
+        return [=](glm::dvec3 pos)
+        {
+            return value_noise_3d(glm::ivec3{ pos * static_cast<double>(scale) }, seed);
         };
     }
 }

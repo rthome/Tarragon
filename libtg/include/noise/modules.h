@@ -214,6 +214,7 @@ namespace tarragon::noise
         double upper_bound = SelectDefaultUpperBound,
         double edge_falloff = SelectDefaultEdgeFalloff);
 
+    // TODO
     // Outputs 3-dimensional Simplex noise
     Module Simplex(
         double frequency = SimplexDefaultFrequency,
@@ -250,6 +251,6 @@ namespace tarragon::noise
 
     // Outputs 3-dimensional White noise
     Module White(
-        uint32_t scale = WhiteDefaultScale,
+        int32_t scale = WhiteDefaultScale,
         int32_t seed = DefaultSeed);
 }
