@@ -65,21 +65,21 @@ namespace tarragon
         m_shader.add_shader(ShaderType::Fragment, FRAGMENT_SOURCE);
         m_shader.link();
 
-        Module displacer = Cache(Multiply(Billow(1 / 8, 3, 6, 0.5, NoiseQuality::Best, 0), Constant(4)));
-        Module source = Displace(
-            RidgedMulti(1 / 64.0, 3, 16, NoiseQuality::Best, 0),
-            displacer, displacer, displacer);
-        Module rescaled_source = Multiply(Constant(0.5), Add(Constant(1.0), source));
-        ChunkMesher mesher{0.7};
+        Module xdisp = Billow(1 / 16, 3, 6, 0.75, NoiseQuality::Standard, 0);
+        Module ydisp = Billow(1 / 16, 3, 6, 0.75, NoiseQuality::Standard, 1);
+        Module zdisp = Billow(1 / 16, 3, 6, 0.75, NoiseQuality::Standard, 2);
+        Module source = Displace(RidgedMulti(1 / 64.0, 2.2, 12, NoiseQuality::Best, 0),
+            xdisp, ydisp, zdisp);
+        ChunkMesher mesher{0.6};
 
-        for (int x = -33; x < 33; x += Chunk::WIDTH)
+        for (int x = -32; x < 32; x += Chunk::WIDTH)
         {
-            for (int y = -33; y < 33; y += Chunk::WIDTH)
+            for (int y = -32; y < 32; y += Chunk::WIDTH)
             {
-                for (int z = -33; z < 33; z += Chunk::WIDTH)
+                for (int z = -32; z < 32; z += Chunk::WIDTH)
                 {
                     Chunk chunk{ glm::dvec3{x + x * 0.0001, y + y * 0.0001, z + z * 0.0001f} };
-                    chunk.fill_from(rescaled_source);
+                    chunk.fill_from(source);
 
                     ChunkMesher::MeshData mesh_data = mesher.mesh(&chunk);
 
