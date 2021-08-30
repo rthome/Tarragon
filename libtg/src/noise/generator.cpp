@@ -6,8 +6,6 @@
 #include <glm/geometric.hpp>
 #include <glm/gtx/component_wise.hpp>
 
-#include "noise/common.h"
-
 namespace tarragon::noise
 {
     namespace

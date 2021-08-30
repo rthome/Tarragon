@@ -4,15 +4,10 @@
 
 #include <glm/vec3.hpp>
 
+#include "noise/common.h"
+
 namespace tarragon::noise
 {
-    enum class NoiseQuality
-    {
-        Fast,
-        Standard,
-        Best,
-    };
-
     // Generates a gradient-coherent-noise value from the coordinates of a
     // three-dimensional input value.
     //

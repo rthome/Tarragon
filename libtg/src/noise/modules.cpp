@@ -16,7 +16,6 @@
 #include <glm/gtx/spline.hpp>
 
 #include "common.h"
-#include "noise/common.h"
 #include "noise/generator.h"
 
 namespace
@@ -227,6 +226,7 @@ namespace tarragon::noise
     Module Curve(Module source, ControlPoint const* control_points, size_t control_point_count)
     {
         assert(control_points != nullptr);
+        assert(control_point_count >= 4);
 
         std::vector<ControlPoint> sorted_control_points{control_points, control_points + control_point_count };
         std::sort(std::begin(sorted_control_points), std::end(sorted_control_points),
@@ -528,6 +528,7 @@ namespace tarragon::noise
     Module Terrace(Module source, double const* control_points, size_t control_point_count, bool invert_terraces)
     {
         assert(control_points != nullptr);
+        assert(control_point_count >= 2);
 
         std::vector<double> control_point_vec{ control_points, control_points + control_point_count };
 
