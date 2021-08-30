@@ -57,12 +57,12 @@ namespace tarragon
                                 data.Colors.push_back(glm::vec4{x / static_cast<float>(Chunk::WIDTH), y / static_cast<float>(Chunk::WIDTH), z / static_cast<float>(Chunk::WIDTH), 1.0f});
                             }
 
-                            data.Indices.push_back(index + 2);
-                            data.Indices.push_back(index + 1);
                             data.Indices.push_back(index + 0);
-                            data.Indices.push_back(index + 2);
-                            data.Indices.push_back(index + 3);
                             data.Indices.push_back(index + 1);
+                            data.Indices.push_back(index + 2);
+                            data.Indices.push_back(index + 1);
+                            data.Indices.push_back(index + 3);
+                            data.Indices.push_back(index + 2);
                             
                             auto normal = glm::triangleNormal(data.Positions.at(index + 0ull), data.Positions.at(index + 1ull), data.Positions.at(index + 2ull));
                             data.Normals.push_back(normal);
