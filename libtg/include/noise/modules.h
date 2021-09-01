@@ -655,7 +655,7 @@ namespace tarragon::noise
         Module source,
         double frequency = TurbulenceDefaultFrequency,
         double power = TurbulenceDefaultPower,
-        double roughness = TurbulenceDefaultRoughness,
+        uint32_t roughness = TurbulenceDefaultRoughness,
         int32_t seed = DefaultSeed);
 
     // Outputs 3-dimensional White noise

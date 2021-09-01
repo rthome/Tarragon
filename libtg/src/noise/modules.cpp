@@ -583,7 +583,7 @@ namespace tarragon::noise
         };
     }
 
-    Module Turbulence(Module source, double frequency, double power, double roughness, int32_t seed)
+    Module Turbulence(Module source, double frequency, double power, uint32_t roughness, int32_t seed)
     {
         auto xdistort = Perlin(frequency, PerlinDefaultLacunarity, roughness, PerlinDefaultPersistence, DefaultQuality, seed);
         auto ydistort = Perlin(frequency, PerlinDefaultLacunarity, roughness, PerlinDefaultPersistence, DefaultQuality, seed + 1);
