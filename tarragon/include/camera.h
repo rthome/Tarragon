@@ -34,6 +34,8 @@ namespace tarragon
         Camera(Camera const&) = delete;
         Camera& operator= (Camera const&) = delete;
 
+        glm::vec3 const& position() { return m_position; }
+
         glm::mat4 const& view() const { return m_view; }
         glm::mat4 const& projection() const { return m_projection; }
 

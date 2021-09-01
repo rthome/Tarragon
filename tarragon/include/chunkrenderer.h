@@ -10,16 +10,11 @@
 #include "chunk.h"
 #include "camera.h"
 #include "shader.h"
+#include "chunkcache.h"
+#include "chunktransfer.h"
 
 namespace tarragon
 {
-    struct Vertex
-    {
-    	glm::vec3 Position;
-    	glm::vec4 Color;
-    	glm::vec3 Normal;
-    };
-
     class ChunkBindings
     {
     private:
@@ -36,7 +31,7 @@ namespace tarragon
         ChunkBindings(ChunkBindings const&) = delete;
         ChunkBindings& operator= (ChunkBindings const&) = delete;
 
-        void upload(ChunkMesher::MeshData *pdata);
+        void upload(ChunkMesh *pdata);
 
         GLuint vao() const { return m_vao; }
         GLuint vertex_buffer() const { return m_vertex_buffer; }
@@ -46,16 +41,22 @@ namespace tarragon
     };
     using ChunkBindingsPtr = std::shared_ptr<ChunkBindings>;
 
+
     class ChunkRenderer : public UpdateComponent, public DrawComponent
     {
     private:
         Camera *m_pcamera;
+        ChunkCache* m_pchunk_cache;
+
         Shader m_shader;
         std::vector<ChunkBindingsPtr> m_bindings;
+        
+        double m_air_threshold{};
 
     public:
-        ChunkRenderer(Camera *pcamera)
-            : m_pcamera{pcamera}
+        ChunkRenderer(Camera *pcamera, ChunkCache* pcache)
+            : m_pcamera{ pcamera }
+            , m_pchunk_cache{ pcache }
         { }
         virtual ~ChunkRenderer() = default;
 
@@ -66,5 +67,7 @@ namespace tarragon
 
         virtual void update(Clock const& clock) override;
         virtual void draw() override;
+
+        ChunkMesh generate_mesh(Chunk* chunk);
     };
 }

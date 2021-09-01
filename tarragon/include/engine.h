@@ -6,6 +6,7 @@
 #include "component.h"
 #include "input.h"
 #include "camera.h"
+#include "chunkcache.h"
 #include "chunkrenderer.h"
 #include "chunkupdater.h"
 
@@ -29,6 +30,7 @@ namespace tarragon
         std::unique_ptr<Input> m_pinput;
         std::unique_ptr<Camera> m_pcamera;
         std::unique_ptr<FreelookCamera> m_pfreecam;
+        std::unique_ptr<ChunkCache> m_pchunk_cache;
         std::unique_ptr<ChunkRenderer> m_pchunk_renderer;
         std::unique_ptr<ChunkUpdater> m_pchunk_updater;
 

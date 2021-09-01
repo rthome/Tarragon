@@ -4,7 +4,9 @@ set(TARGET_NAME tarragon)
 set(${TARGET_NAME}_FILES
     include/camera.h src/camera.cpp
     include/chunk.h src/chunk.cpp
+    include/chunkcache.h src/chunkcache.cpp
     include/chunkrenderer.h src/chunkrenderer.cpp
+    include/chunktransfer.h src/chunktransfer.cpp
     include/chunkupdater.h src/chunkupdater.cpp
     include/clock.h
     include/component.h

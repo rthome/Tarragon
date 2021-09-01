@@ -1,6 +1,14 @@
 #pragma once
 
+#include <array>
+#include <vector>
+
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+
 #include "component.h"
+#include "chunk.h"
+#include "chunktransfer.h"
 
 namespace tarragon
 {

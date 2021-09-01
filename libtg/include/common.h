@@ -9,6 +9,9 @@ namespace tarragon
     template <typename T = int32_t>
     class IncId final
     {
+    public:
+        using id_type = T;
+
     private:
         T m_ctr{};
 

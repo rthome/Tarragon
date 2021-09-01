@@ -72,7 +72,7 @@ namespace tarragon
         if (m_mouse_locked)
         {
             m_look += m_pinput->mouse_delta() * turn_speed;
-            m_look.x = fmod(m_look.x, 360.0f);
+            m_look.x = glm::fmod(m_look.x, 360.0f);
             m_look.y = glm::clamp(m_look.y, -85.0f, 85.0f);
 
             m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(m_look.x), glm::vec3{0.0f, 0.0f, 1.0f}) * glm::rotate(glm::identity<glm::quat>(), glm::radians(-m_look.y), glm::vec3{1.0f, 0.0f, 0.0f});

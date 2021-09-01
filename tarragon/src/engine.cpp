@@ -141,7 +141,9 @@ namespace tarragon
         m_pfreecam = std::make_unique<FreelookCamera>(camera(), input());
         m_pfreecam->initialize();
 
-        m_pchunk_renderer = std::make_unique<ChunkRenderer>(camera());
+        m_pchunk_cache = std::make_unique<ChunkCache>();
+
+        m_pchunk_renderer = std::make_unique<ChunkRenderer>(camera(), m_pchunk_cache.get());
         m_pchunk_renderer->initialize();
 
         m_pchunk_updater = std::make_unique<ChunkUpdater>();
