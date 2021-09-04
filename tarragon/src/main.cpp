@@ -1,20 +1,11 @@
-#include <cstdlib>
-#include <iostream>
-#include <vector>
-#include <string>
-
 #include <glm/glm.hpp>
 
 #include "glad/gl.h"
 #include <GLFW/glfw3.h>
 
+#include "common.h"
 #include "engine.h"
-#include <common.h>
 #include "framelimit.h"
-#include "camera.h"
-#include "shader.h"
-#include "shadersource.h"
-#include "chunk.h"
 
 using namespace tarragon;
 

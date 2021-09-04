@@ -139,17 +139,15 @@ namespace tarragon
         glVertexArrayAttribBinding(m_vao, 1, 1);
         glVertexArrayAttribBinding(m_vao, 2, 2);
 
-        // //
-
         //if (pdata->Positions.size() > 0)
         //{
         //    std::vector<glm::vec3> normallines;
         //    for (auto i = 0; i < pdata->Positions.size(); i++) {
         //        //retrieving the normal associated with this vertex
-        //        auto n = pdata->Normals[i];
+        //        auto const& n = pdata->Normals[i];
 
         //        //retrieving the vertex itself, it'll be the first point of our line
-        //        auto v1 = pdata->Positions[i];
+        //        auto const& v1 = pdata->Positions[i];
 
         //        const auto normal_length = 0.5f;
         //        //second point of our line representing the normal direction
@@ -176,9 +174,9 @@ namespace tarragon
         m_shader.add_shader_from_file(ShaderType::Fragment, { "shaders/chunk.fs" });
         m_shader.link();
 
-        m_normal_shader.add_shader(ShaderType::Vertex, { "shaders/chunk_normals.vs" });
-        m_normal_shader.add_shader(ShaderType::Fragment, { "shaders/chunk_normals.fs" });
-        m_normal_shader.link();
+        //m_normal_shader.add_shader_from_file(ShaderType::Vertex, { "shaders/chunk_normals.vs" });
+        //m_normal_shader.add_shader_from_file(ShaderType::Fragment, { "shaders/chunk_normals.fs" });
+        //m_normal_shader.link();
 
         m_air_threshold = 0.0;
 
