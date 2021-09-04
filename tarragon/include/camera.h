@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/ext/quaternion_float.hpp>
+#include <glm/ext/quaternion_transform.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 
@@ -12,6 +13,11 @@ namespace tarragon
 {
     class Camera : public System
     {
+    public:
+        static constexpr glm::vec3 RIGHT{ 1.0f, 0.0f, 0.0f };
+        static constexpr glm::vec3 UP{ 0.0f, 1.0f, 0.0f };
+        static constexpr glm::vec3 FORWARD{ 0.0f, 0.0f, -1.0f };
+
     private:
         int m_width = 1, m_height = 1;
         float m_near_plane = 1.0f, m_far_plane = 2.0f;
@@ -34,7 +40,8 @@ namespace tarragon
         Camera(Camera const&) = delete;
         Camera& operator= (Camera const&) = delete;
 
-        glm::vec3 const& position() { return m_position; }
+        glm::vec3 const& position() const { return m_position; }
+        glm::vec3 forward() const { return m_rotation * Camera::FORWARD; }
 
         glm::mat4 const& view() const { return m_view; }
         glm::mat4 const& projection() const { return m_projection; }

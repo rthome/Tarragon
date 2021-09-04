@@ -2,21 +2,20 @@
 
 #include <glm/gtx/common.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/quaternion_transform.hpp>
 
 namespace tarragon
 {
     void Camera::update_projection()
     {
-        m_projection = glm::perspectiveLH(glm::radians(m_fov), static_cast<float>(m_width) / static_cast<float>(m_height), m_near_plane, m_far_plane);
+        m_projection = glm::perspectiveFovRH_ZO(glm::radians(m_fov), static_cast<float>(m_width), static_cast<float>(m_height), m_near_plane, m_far_plane);
+        m_projection[1][1] *= -1; //flip Y coordinate
     }
 
     void Camera::update_view()
     {
-        glm::vec3 right = m_rotation * glm::vec3{ 1.0f, 0.0f, 0.0f };
-        glm::vec3 up = m_rotation * glm::vec3{ 0.0f, 0.0f, 1.0f };
-        glm::vec3 forward = m_rotation * glm::vec3{ 0.0f, 1.0f, 0.0f};
-        m_view = glm::lookAtLH(m_position, m_position + forward, up);
+        glm::vec3 up = m_rotation * Camera::UP;
+        glm::vec3 forward = m_rotation * Camera::FORWARD;
+        m_view = glm::lookAtRH(m_position, m_position + forward, up);
     }
 
     void Camera::set_resolution(int width, int height)
@@ -75,19 +74,25 @@ namespace tarragon
             m_look.x = glm::fmod(m_look.x, 360.0f);
             m_look.y = glm::clamp(m_look.y, -85.0f, 85.0f);
 
-            m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(m_look.x), glm::vec3{0.0f, 0.0f, 1.0f}) * glm::rotate(glm::identity<glm::quat>(), glm::radians(-m_look.y), glm::vec3{1.0f, 0.0f, 0.0f});
+            m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(-m_look.x), glm::vec3{0.0f, 1.0f, 0.0f}) * glm::rotate(glm::identity<glm::quat>(), glm::radians(m_look.y), glm::vec3{1.0f, 0.0f, 0.0f});
 
             glm::vec3 movement{};
             if (m_pinput->key_is_down(Key::W))
-                movement += glm::vec3{0.0f, 1.0f, 0.0f};
+                movement += Camera::FORWARD;
             if (m_pinput->key_is_down(Key::S))
-                movement += glm::vec3{0.0f, -1.0f, 0.0f};
+                movement -= Camera::FORWARD;
             if (m_pinput->key_is_down(Key::A))
-                movement += glm::vec3{1.0f, 0.0f, 0.0f};
+                movement -= Camera::RIGHT;
             if (m_pinput->key_is_down(Key::D))
-                movement += glm::vec3{-1.0f, 0.0f, 0.0f};
+                movement += Camera::RIGHT;
+            if (m_pinput->key_is_down(Key::Space))
+                movement += Camera::UP;
 
-            m_position += m_rotation * (move_speed * clock.last_delta() * movement);
+            auto adjusted_speed = move_speed;
+            if (m_pinput->key_is_down(Key::LeftShift))
+                adjusted_speed *= 2;
+
+            m_position += m_rotation * (adjusted_speed * clock.last_delta() * movement);
 
             m_pcamera->set_position(m_position);
             m_pcamera->set_rotation(m_rotation);

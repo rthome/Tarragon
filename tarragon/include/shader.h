@@ -29,6 +29,9 @@ namespace tarragon
             : m_location{ location }
         { }
 
+        void write(GLint value) { glUniform1i(m_location, value); }
+        void write(GLuint value) { glUniform1ui(m_location, value); }
+        void write(float value) { glUniform1f(m_location, value); }
         void write(glm::vec2 const& value) { glUniform2fv(m_location, 1, glm::value_ptr(value)); }
         void write(glm::vec3 const& value) { glUniform3fv(m_location, 1, glm::value_ptr(value)); }
         void write(glm::vec4 const& value) { glUniform4fv(m_location, 1, glm::value_ptr(value)); }

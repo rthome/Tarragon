@@ -17,6 +17,7 @@ set(${TARGET_NAME}_FILES
     include/shadersource.h
     include/glad/gl.h src/gl.c
     include/KHR/khrplatform.h
+    include/stb/stb_image.h src/stb/stb.cpp
     src/main.cpp
 )
 
@@ -35,3 +36,27 @@ target_link_libraries(${TARGET_NAME} PUBLIC
     glfw
     glm::glm
 )
+
+
+set(TEXTURES
+    "res/rock-diffuse.png" ;
+)
+set(RESOURCES_TEXTURES)
+
+foreach(TEXTURE ${TEXTURES})
+    get_filename_component(FILE_NAME ${TEXTURE} NAME)
+    set(TEXTURE_OUT "${CMAKE_CURRENT_BINARY_DIR}/res/${FILE_NAME}")
+    add_custom_command(
+        OUTPUT ${TEXTURE_OUT}
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${TEXTURE}" ${TEXTURE_OUT}
+        MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${TEXTURE}"
+    )
+    list(APPEND RESOURCES_TEXTURES ${TEXTURE_OUT})
+endforeach(TEXTURE)
+
+add_custom_target(
+    CopyTextures
+    DEPENDS ${RESOURCES_TEXTURES}
+)
+
+add_dependencies(${TARGET_NAME} CopyTextures)

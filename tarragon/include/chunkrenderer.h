@@ -18,14 +18,23 @@ namespace tarragon
     class ChunkBindings
     {
     private:
+        Chunk::Extents m_chunk_extents;
+
         GLuint m_vao{};
-        GLuint m_vertex_buffer{};
+        GLuint m_position_buffer{};
+        GLuint m_normal_buffer{};
+        GLuint m_texcoord_buffer{};
         GLuint m_index_buffer{};
         GLsizei m_index_count{};
         glm::mat4 m_model{};
 
+    //public:
+    //    GLuint m_normal_vao{};
+    //    GLuint m_normalline_buffer{};
+    //    GLsizei m_normalline_count{};
+
     public:
-        ChunkBindings();
+        ChunkBindings(Chunk::Extents const& chunk_extents);
         ~ChunkBindings();
 
         ChunkBindings(ChunkBindings const&) = delete;
@@ -33,11 +42,11 @@ namespace tarragon
 
         void upload(ChunkMesh *pdata);
 
-        GLuint vao() const { return m_vao; }
-        GLuint vertex_buffer() const { return m_vertex_buffer; }
-        GLuint index_buffer() const { return m_index_buffer; }
-        GLsizei index_count() const { return m_index_count; }
-        glm::mat4 const& model() const { return m_model; }
+        Chunk::Extents const& chunk_extents() const noexcept { return m_chunk_extents; }
+
+        GLuint vao() const noexcept { return m_vao; }
+        GLsizei index_count() const noexcept { return m_index_count; }
+        glm::mat4 const& model() const noexcept { return m_model; }
     };
     using ChunkBindingsPtr = std::shared_ptr<ChunkBindings>;
 
@@ -49,9 +58,12 @@ namespace tarragon
         ChunkCache* m_pchunk_cache;
 
         Shader m_shader;
+        Shader m_normal_shader;
         std::vector<ChunkBindingsPtr> m_bindings;
         
         double m_air_threshold{};
+
+        GLuint m_rock_texture{};
 
     public:
         ChunkRenderer(Camera *pcamera, ChunkCache* pcache)

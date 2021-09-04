@@ -167,6 +167,7 @@ namespace tarragon
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         m_pwindow = glfwCreateWindow(1280, 720, "Tarragon", nullptr, nullptr);
         if (!m_pwindow)
         {
@@ -193,8 +194,12 @@ namespace tarragon
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        
         if (!initialize_components())
             return false;
 
