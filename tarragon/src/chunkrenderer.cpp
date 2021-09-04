@@ -170,12 +170,12 @@ namespace tarragon
 
     void ChunkRenderer::initialize()
     {
-        m_shader.add_shader_from_file(ShaderType::Vertex, { "shaders/chunk.vs" });
-        m_shader.add_shader_from_file(ShaderType::Fragment, { "shaders/chunk.fs" });
+        m_shader.add_shader_from_file(ShaderType::Vertex, { "shaders/chunk.vert" });
+        m_shader.add_shader_from_file(ShaderType::Fragment, { "shaders/chunk.frag" });
         m_shader.link();
 
-        //m_normal_shader.add_shader_from_file(ShaderType::Vertex, { "shaders/chunk_normals.vs" });
-        //m_normal_shader.add_shader_from_file(ShaderType::Fragment, { "shaders/chunk_normals.fs" });
+        //m_normal_shader.add_shader_from_file(ShaderType::Vertex, { "shaders/chunk_normals.vert" });
+        //m_normal_shader.add_shader_from_file(ShaderType::Fragment, { "shaders/chunk_normals.frag" });
         //m_normal_shader.link();
 
         m_air_threshold = 0.0;

@@ -43,10 +43,10 @@ set(TEXTURES
 set(RESOURCES_TEXTURES)
 
 set(SHADERS
-    "shaders/chunk.vs" ;
-    "shaders/chunk.fs" ;
-    "shaders/chunk_normals.vs" ;
-    "shaders/chunk_normals.fs" ;
+    "shaders/chunk.vert" ;
+    "shaders/chunk.frag" ;
+    "shaders/chunk_normals.vert" ;
+    "shaders/chunk_normals.frag" ;
 )
 set(RESOURCES_SHADERS)
 

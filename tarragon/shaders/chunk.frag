@@ -23,7 +23,7 @@ out vec4 frag_color;
 
 void main()
 {
-    vec4 vert_color = texture(TexDiffuse, tex_coords);
+    vec4 vert_color = texture2D(TexDiffuse, tex_coords);
 
     vec3 ambient = L.ambient * vert_color.rgb;
 

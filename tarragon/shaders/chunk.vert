@@ -17,6 +17,6 @@ void main()
     vert_pos = vec3(Model * vec4(pos, 1.0));
     vert_normal = normal;
     tex_coords = texcoord;
-
+    
     gl_Position = Projection * View * vec4(vert_pos, 1.0);
 }
