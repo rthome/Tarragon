@@ -3,6 +3,9 @@
 #include <iostream>
 #include <string_view>
 #include <vector>
+#include <fstream>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include "glad/gl.h"
 
@@ -63,6 +66,17 @@ namespace tarragon
 
         GLuint program() const { return m_program; }
         void use() const { glUseProgram(m_program); }
+
+        void add_shader_from_file(ShaderType type, fs::path const& path)
+        {
+            std::ifstream stream{ path, std::ios::binary };
+            std::string shader_source;
+            
+            std::ostringstream sstr;
+            sstr << stream.rdbuf();
+
+            add_shader(type, sstr.str());
+        }
 
         void add_shader(ShaderType type, std::string_view source)
         {

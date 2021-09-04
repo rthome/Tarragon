@@ -5,7 +5,6 @@
 #include "glad/gl.h"
 #include "stb/stb_image.h"
 #include <common.h>
-#include "shadersource.h"
 
 #include <noise/modules.h>
 using namespace tarragon::noise;
@@ -173,12 +172,12 @@ namespace tarragon
 
     void ChunkRenderer::initialize()
     {
-        m_shader.add_shader(ShaderType::Vertex, VERTEX_SOURCE);
-        m_shader.add_shader(ShaderType::Fragment, FRAGMENT_SOURCE);
+        m_shader.add_shader_from_file(ShaderType::Vertex, { "shaders/chunk.vs" });
+        m_shader.add_shader_from_file(ShaderType::Fragment, { "shaders/chunk.fs" });
         m_shader.link();
 
-        m_normal_shader.add_shader(ShaderType::Vertex, NORMAL_VS_SOURCE);
-        m_normal_shader.add_shader(ShaderType::Fragment, NORMAL_FS_SOURCE);
+        m_normal_shader.add_shader(ShaderType::Vertex, { "shaders/chunk_normals.vs" });
+        m_normal_shader.add_shader(ShaderType::Fragment, { "shaders/chunk_normals.fs" });
         m_normal_shader.link();
 
         m_air_threshold = 0.0;
