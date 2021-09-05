@@ -143,10 +143,13 @@ namespace tarragon
 
         m_pchunk_cache = std::make_unique<ChunkCache>();
 
-        m_pchunk_renderer = std::make_unique<ChunkRenderer>(camera(), m_pchunk_cache.get());
+        m_pchunk_transfer = std::make_unique<ChunkTransfer>(camera());
+        m_pchunk_transfer->initialize();
+
+        m_pchunk_renderer = std::make_unique<ChunkRenderer>(camera(), m_pchunk_cache.get(), m_pchunk_transfer.get());
         m_pchunk_renderer->initialize();
 
-        m_pchunk_updater = std::make_unique<ChunkUpdater>();
+        m_pchunk_updater = std::make_unique<ChunkUpdater>(m_pchunk_transfer.get());
         m_pchunk_updater->initialize();
 
         return true;

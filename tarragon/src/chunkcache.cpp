@@ -48,7 +48,7 @@ namespace tarragon
 
 		// no chunk found, create it
 		auto chunk_origin = get_chunk_origin(chunk_index);
-		auto it = m_chunks.emplace(chunk_hash, std::make_unique<Chunk>(chunk_origin));
+		auto it = m_chunks.emplace(chunk_hash, std::make_unique<Chunk>(chunk_origin, chunk_index));
 		return it->second.get();
 	}
 

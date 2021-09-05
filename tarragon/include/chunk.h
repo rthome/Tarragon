@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <array>
 #include <memory>
+#include <vector>
 
 #include <glm/vec3.hpp>
 #include <glm/gtx/std_based_type.hpp>
@@ -15,6 +16,22 @@ using namespace tarragon::noise;
 
 namespace tarragon
 {
+    enum class ChunkState
+    {
+        Created, // Created, no data yet
+        Loading, // Waiting to generate and mesh
+        Ready, // Ready to render
+    };
+
+    struct ChunkMesh
+    {
+        glm::vec3 WorldPosition;
+        std::vector<glm::vec3> Positions;
+        std::vector<glm::vec3> Normals;
+        std::vector<glm::vec2> TexCoords;
+        std::vector<uint32_t> Indices;
+    };
+
     template <size_t Width, double BlockSize>
     class ChunkExtents final
     {
@@ -60,10 +77,10 @@ namespace tarragon
         }
     };
 
+    using ChunkIndex = glm::i64vec3;
+
     class Chunk final
     {
-        static IncId<int64_t> s_id;
-
     public:
         static constexpr size_t WIDTH = 16;
 
@@ -80,27 +97,38 @@ namespace tarragon
         }
 
     private:
-        const int64_t m_id;
+        ChunkIndex m_chunk_index;
         Extents m_extents;
 
-        bool m_has_data;
+        ChunkState m_state;
         std::unique_ptr<DataArray> m_pdata;
+        std::unique_ptr<ChunkMesh> m_pmesh;
 
     public:
-        Chunk(glm::dvec3 center_position)
-            : m_id{ s_id.get() }
-            , m_extents{ center_position }
-            , m_has_data{}
+        Chunk(glm::dvec3 const& world_origin, ChunkIndex chunk_index)
+            : m_extents{ world_origin }
+            , m_chunk_index{ chunk_index }
+            , m_state{ ChunkState::Created }
             , m_pdata{ std::make_unique<DataArray>() }
+            , m_pmesh{}
         { }
 
-        int64_t id() const noexcept { return m_id; }
+        constexpr ChunkIndex const& chunk_index() const noexcept { return m_chunk_index; }
 
-        Extents const& extents() const noexcept { return m_extents; }
-        glm::dvec3 center() const noexcept { return m_extents.center(); }
+        constexpr Extents const& extents() const noexcept { return m_extents; }
+        constexpr glm::dvec3 center() const noexcept { return m_extents.center(); }
+        constexpr glm::dvec3 origin() const noexcept { return m_extents.origin(); }
 
-        bool has_data() const noexcept { return m_has_data; }
+        constexpr ChunkState const& state() const noexcept { return m_state; }
+        constexpr ChunkState& state() noexcept { return m_state; }
+
         const DataArray* data() const noexcept { return m_pdata.get(); }
+        const ChunkMesh* mesh() const noexcept { return m_pmesh.get(); }
+        
+        void set_mesh(ChunkMesh&& mesh)
+        {
+            m_pmesh = std::make_unique<ChunkMesh>(mesh);
+        }
 
         constexpr double at(glm::size3 const& pos) const
         {
@@ -112,7 +140,6 @@ namespace tarragon
         {
             auto index = Chunk::index_for(pos);
             m_pdata->at(index) = value;
-            m_has_data = true;
         }
 
         void fill_from(Module source);

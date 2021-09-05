@@ -11,8 +11,6 @@
 
 namespace tarragon
 {
-	using ChunkIndex = glm::i64vec3;
-
 	class ChunkCache
 	{
 	public:
@@ -30,7 +28,7 @@ namespace tarragon
 		static constexpr uint64_t P1 = 2456099197ui64;
 
 		// calculates a primitive hash from the chunk index to improve lookup
-		static int64_t get_chunk_index_hash(ChunkIndex const& origin_position);
+		static int64_t get_chunk_index_hash(ChunkIndex const& chunk_index);
 
 		std::unordered_multimap<int64_t, std::unique_ptr<Chunk>> m_chunks{};
 

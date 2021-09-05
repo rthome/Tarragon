@@ -2,11 +2,8 @@
 
 namespace tarragon
 {
-    IncId<int64_t> Chunk::s_id{};
-
     void Chunk::fill_from(Module source)
     {
-        m_has_data = true;
         for (size_t z = 0; z < Chunk::WIDTH; z++)
         {
             for (size_t y = 0; y < Chunk::WIDTH; y++)

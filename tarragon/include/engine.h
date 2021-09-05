@@ -9,6 +9,7 @@
 #include "chunkcache.h"
 #include "chunkrenderer.h"
 #include "chunkupdater.h"
+#include "chunktransfer.h"
 
 struct GLFWwindow;
 
@@ -33,6 +34,7 @@ namespace tarragon
         std::unique_ptr<ChunkCache> m_pchunk_cache;
         std::unique_ptr<ChunkRenderer> m_pchunk_renderer;
         std::unique_ptr<ChunkUpdater> m_pchunk_updater;
+        std::unique_ptr<ChunkTransfer> m_pchunk_transfer;
 
         bool initialize_components();
 

@@ -40,7 +40,7 @@ namespace tarragon
         ChunkBindings(ChunkBindings const&) = delete;
         ChunkBindings& operator= (ChunkBindings const&) = delete;
 
-        void upload(ChunkMesh *pdata);
+        void upload(const ChunkMesh *pdata);
 
         Chunk::Extents const& chunk_extents() const noexcept { return m_chunk_extents; }
 
@@ -54,21 +54,21 @@ namespace tarragon
     class ChunkRenderer : public UpdateComponent, public DrawComponent
     {
     private:
-        Camera *m_pcamera;
+        Camera* m_pcamera;
         ChunkCache* m_pchunk_cache;
+        ChunkTransfer* m_pchunk_transfer;
 
         Shader m_shader;
-        Shader m_normal_shader;
+        //Shader m_normal_shader;
         std::vector<ChunkBindingsPtr> m_bindings;
-        
-        double m_air_threshold{};
 
         GLuint m_rock_texture{};
 
     public:
-        ChunkRenderer(Camera *pcamera, ChunkCache* pcache)
+        ChunkRenderer(Camera *pcamera, ChunkCache* pcache, ChunkTransfer* ptransfer)
             : m_pcamera{ pcamera }
             , m_pchunk_cache{ pcache }
+            , m_pchunk_transfer{ ptransfer }
         { }
         virtual ~ChunkRenderer() = default;
 
