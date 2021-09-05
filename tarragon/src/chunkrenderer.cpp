@@ -125,20 +125,29 @@ namespace tarragon
     {
         UNUSED_PARAM(clock);
 
-        auto chunk_indices = m_pchunk_cache->chunk_indices_around(m_pcamera->position(), 30.0);
-        for (auto& index : chunk_indices)
-        {
-            auto pchunk = m_pchunk_cache->get_chunk_at(index);
-            if (pchunk->state() == ChunkState::Created)
-                m_pchunk_transfer->enqueue_to_load(pchunk);
-        }
-
         Chunk* pgenchunk{};
         if (m_pchunk_transfer->dequeue_to_render(&pgenchunk))
         {
             ChunkBindingsPtr pbinding = std::make_shared<ChunkBindings>(pgenchunk->extents());
             pbinding->upload(pgenchunk->mesh());
             m_bindings.push_back(pbinding);
+        }
+
+        Chunk* punloadchunk{};
+        if (m_pchunk_transfer->dequeue_to_unload(&punloadchunk))
+        {
+            // TODO: Implement better mapping from chunk to chunk bindings
+            ChunkBindingsPtr unload_bindings{};
+            for (auto it = std::cbegin(m_bindings); it != std::cend(m_bindings); it++)
+            {
+                unload_bindings = *it;
+                if (unload_bindings->chunk_extents().origin() == punloadchunk->origin())
+                {
+                    m_bindings.erase(it);
+                    punloadchunk->clear_data();
+                    break;
+                }
+            }
         }
     }
 

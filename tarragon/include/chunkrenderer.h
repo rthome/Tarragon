@@ -10,7 +10,6 @@
 #include "chunk.h"
 #include "camera.h"
 #include "shader.h"
-#include "chunkcache.h"
 #include "chunktransfer.h"
 
 namespace tarragon
@@ -55,7 +54,6 @@ namespace tarragon
     {
     private:
         Camera* m_pcamera;
-        ChunkCache* m_pchunk_cache;
         ChunkTransfer* m_pchunk_transfer;
 
         Shader m_shader;
@@ -65,9 +63,8 @@ namespace tarragon
         GLuint m_rock_texture{};
 
     public:
-        ChunkRenderer(Camera *pcamera, ChunkCache* pcache, ChunkTransfer* ptransfer)
+        ChunkRenderer(Camera *pcamera, ChunkTransfer* ptransfer)
             : m_pcamera{ pcamera }
-            , m_pchunk_cache{ pcache }
             , m_pchunk_transfer{ ptransfer }
         { }
         virtual ~ChunkRenderer() = default;
@@ -79,7 +76,5 @@ namespace tarragon
 
         virtual void update(Clock const& clock) override;
         virtual void draw() override;
-
-        ChunkMesh generate_mesh(Chunk* chunk);
     };
 }

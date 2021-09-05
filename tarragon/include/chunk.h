@@ -21,6 +21,7 @@ namespace tarragon
         Created, // Created, no data yet
         Loading, // Waiting to generate and mesh
         Ready, // Ready to render
+        Unloading, // Waiting to unload data and mesh
     };
 
     struct ChunkMesh
@@ -128,6 +129,13 @@ namespace tarragon
         void set_mesh(ChunkMesh&& mesh)
         {
             m_pmesh = std::make_unique<ChunkMesh>(mesh);
+        }
+
+        void clear_data()
+        {
+            m_pmesh = {};
+            m_pdata = std::make_unique<DataArray>();
+            state() = ChunkState::Created;
         }
 
         constexpr double at(glm::size3 const& pos) const
