@@ -1,6 +1,13 @@
 #include "chunkupdater.h"
 
+#include <array>
+#include <vector>
+
 #include "common.h"
+#include "camera.h"
+
+#include <noise/modules.h>
+using namespace tarragon::noise;
 
 namespace tarragon
 {
@@ -75,29 +82,6 @@ namespace tarragon
         };
     }
 
-    void ChunkUpdater::update(Clock const& clock)
-    {
-        UNUSED_PARAM(clock);
-
-        Chunk* pgenchunk{};
-        if (m_pchunk_transfer->dequeue_to_load(&pgenchunk))
-        {
-            Module xdisp = Billow(1 / 15, 3, 8, 0.5, NoiseQuality::Standard, 0);
-            Module ydisp = Billow(1 / 15, 3, 8, 0.5, NoiseQuality::Standard, 1);
-            Module zdisp = Billow(1 / 15, 3, 8, 0.5, NoiseQuality::Standard, 2);
-            Module source = Displace(RidgedMulti(1 / 72.0, 2.3, 14, NoiseQuality::Best, 0),
-                xdisp, ydisp, zdisp);
-
-            pgenchunk->fill_from(source);
-            auto mesh_data = generate_mesh(pgenchunk);
-            pgenchunk->set_mesh(std::move(mesh_data));
-
-            m_pchunk_transfer->enqueue_to_render(pgenchunk);
-
-            return;
-        }
-    }
-
     ChunkMesh ChunkUpdater::generate_mesh(Chunk* chunk)
     {
         ChunkMesh data{};
@@ -158,5 +142,36 @@ namespace tarragon
 
         data.WorldPosition = glm::vec3{ chunk->extents().origin() };
         return data;
+    }
+
+    void ChunkUpdater::work_thread_loop()
+    {
+        while (true)
+        {
+            Chunk* pgenchunk{};
+            if (m_pchunk_transfer->dequeue_to_load(&pgenchunk))
+            {
+                Module xdisp = Billow(1 / 15, 3, 8, 0.5, NoiseQuality::Standard, 0);
+                Module ydisp = Billow(1 / 15, 3, 8, 0.5, NoiseQuality::Standard, 1);
+                Module zdisp = Billow(1 / 15, 3, 8, 0.5, NoiseQuality::Standard, 2);
+                Module source = Displace(RidgedMulti(1 / 72.0, 2.3, 14, NoiseQuality::Best, 0),
+                    xdisp, ydisp, zdisp);
+
+                pgenchunk->fill_from(source);
+                auto mesh_data = generate_mesh(pgenchunk);
+                pgenchunk->set_mesh(std::move(mesh_data));
+
+                m_pchunk_transfer->enqueue_to_render(pgenchunk);
+
+                std::this_thread::yield();
+            }
+            else
+                std::this_thread::sleep_for(std::chrono::milliseconds{ 100 });
+        }
+    }
+
+    void ChunkUpdater::update(Clock const& clock)
+    {
+        UNUSED_PARAM(clock);
     }
 }

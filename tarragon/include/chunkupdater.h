@@ -1,7 +1,6 @@
 #pragma once
 
-#include <array>
-#include <vector>
+#include <thread>
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -11,9 +10,6 @@
 #include "chunk.h"
 #include "chunktransfer.h"
 
-#include <noise/modules.h>
-using namespace tarragon::noise;
-
 namespace tarragon
 {
     class ChunkUpdater : public UpdateComponent
@@ -21,11 +17,19 @@ namespace tarragon
     private:
         ChunkTransfer* m_pchunk_transfer;
 
-        double m_air_threshold{ 0.2 };
+        std::jthread m_work_thread_0;
+        std::jthread m_work_thread_1;
+        double m_air_threshold{ 0.1 };
+
+        ChunkMesh generate_mesh(Chunk* chunk);
+
+        void work_thread_loop();
 
     public:
         ChunkUpdater(ChunkTransfer* ptransfer)
             : m_pchunk_transfer{ ptransfer }
+            , m_work_thread_0{ &ChunkUpdater::work_thread_loop, this }
+            , m_work_thread_1{ &ChunkUpdater::work_thread_loop, this }
         {
 
         }
@@ -40,7 +44,5 @@ namespace tarragon
         }
 
         virtual void update(Clock const& clock) override;
-
-        ChunkMesh generate_mesh(Chunk* chunk);
     };
 }
