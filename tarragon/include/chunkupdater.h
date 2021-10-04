@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <thread>
 
 #include <glm/vec3.hpp>
@@ -9,6 +10,7 @@
 #include "component.h"
 #include "chunk.h"
 #include "chunktransfer.h"
+#include "world.h"
 
 namespace tarragon
 {
@@ -19,7 +21,8 @@ namespace tarragon
 
         std::jthread m_work_thread_0;
         std::jthread m_work_thread_1;
-        double m_air_threshold{ 0.1 };
+        
+        std::unique_ptr<World> m_pworld;
 
         ChunkMesh generate_mesh(Chunk* chunk);
 
@@ -30,6 +33,7 @@ namespace tarragon
             : m_pchunk_transfer{ ptransfer }
             , m_work_thread_0{ &ChunkUpdater::work_thread_loop, this }
             , m_work_thread_1{ &ChunkUpdater::work_thread_loop, this }
+            , m_pworld{ std::make_unique<World>() }
         {
 
         }

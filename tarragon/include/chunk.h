@@ -16,6 +16,12 @@ using namespace tarragon::noise;
 
 namespace tarragon
 {
+    enum class BlockType
+    {
+        Air,
+        Rock,
+    };
+
     enum class ChunkState
     {
         Created, // Created, no data yet
@@ -31,6 +37,11 @@ namespace tarragon
         std::vector<glm::vec3> Normals;
         std::vector<glm::vec2> TexCoords;
         std::vector<uint32_t> Indices;
+    };
+
+    struct Block
+    {
+        BlockType Type;
     };
 
     template <size_t Width, double BlockSize>
@@ -86,7 +97,7 @@ namespace tarragon
         static constexpr size_t WIDTH = 16;
 
         using Extents = ChunkExtents<WIDTH, 1.0>;
-        using DataArray = std::array<double, WIDTH * WIDTH * WIDTH>;
+        using DataArray = std::array<Block, WIDTH * WIDTH * WIDTH>;
 
         static constexpr size_t index_for(glm::size3 const& position) noexcept
         {
@@ -138,18 +149,16 @@ namespace tarragon
             state() = ChunkState::Created;
         }
 
-        constexpr double at(glm::size3 const& pos) const
+        constexpr Block at(glm::size3 const& pos) const
         {
             auto index = Chunk::index_for(pos);
             return m_pdata->at(index);
         }
 
-        void set_at(glm::size3 const& pos, double value)
+        void set_at(glm::size3 const& pos, Block block)
         {
             auto index = Chunk::index_for(pos);
-            m_pdata->at(index) = value;
+            m_pdata->at(index) = block;
         }
-
-        void fill_from(Module source);
     };
 }

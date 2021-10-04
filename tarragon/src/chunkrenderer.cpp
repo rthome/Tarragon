@@ -8,8 +8,6 @@
 
 namespace tarragon
 {
-
-
     ChunkBindings::ChunkBindings(Chunk::Extents const& chunk_extents)
         : m_chunk_extents{ chunk_extents }
     {

@@ -95,8 +95,8 @@ namespace tarragon
                 {
                     glm::size3 position{ x, y, z };
 
-                    auto value = chunk->at(position);
-                    if (value < m_air_threshold)
+                    auto block = chunk->at(position);
+                    if (block.Type == BlockType::Air)
                         continue;
 
                     for (size_t i = 0; i < Neighbours6.size(); i++)
@@ -107,7 +107,7 @@ namespace tarragon
                         if (((neighbour_pos.x < 0 || neighbour_pos.x >= static_cast<int>(Chunk::WIDTH))
                             || (neighbour_pos.y < 0 || neighbour_pos.y >= static_cast<int>(Chunk::WIDTH))
                             || (neighbour_pos.z < 0 || neighbour_pos.z >= static_cast<int>(Chunk::WIDTH)))
-                            || chunk->at(glm::size3{ neighbour_pos }) < m_air_threshold)
+                            || chunk->at(glm::size3{ neighbour_pos }).Type == BlockType::Air)
                         {
                             auto& quad = NeighbourFaces.at(i);
                             for (size_t j = 0; j < quad.size(); j++)
@@ -151,13 +151,8 @@ namespace tarragon
             Chunk* pgenchunk{};
             if (m_pchunk_transfer->dequeue_to_load(&pgenchunk))
             {
-                Module xdisp = Billow(1 / 15, 3, 8, 0.5, NoiseQuality::Standard, 0);
-                Module ydisp = Billow(1 / 15, 3, 8, 0.5, NoiseQuality::Standard, 1);
-                Module zdisp = Billow(1 / 15, 3, 8, 0.5, NoiseQuality::Standard, 2);
-                Module source = Displace(RidgedMulti(1 / 72.0, 2.3, 14, NoiseQuality::Best, 0),
-                    xdisp, ydisp, zdisp);
+                m_pworld->generate_data(pgenchunk);
 
-                pgenchunk->fill_from(source);
                 auto mesh_data = generate_mesh(pgenchunk);
                 pgenchunk->set_mesh(std::move(mesh_data));
 

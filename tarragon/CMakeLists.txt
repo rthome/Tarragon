@@ -14,6 +14,7 @@ set(${TARGET_NAME}_FILES
     include/framelimit.h
     include/input.h src/input.cpp
     include/shader.h
+    include/world.h src/world.cpp
     include/glad/gl.h src/gl.c
     include/KHR/khrplatform.h
     include/stb/stb_image.h src/stb/stb.cpp
