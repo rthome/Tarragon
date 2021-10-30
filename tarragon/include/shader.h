@@ -69,7 +69,6 @@ namespace tarragon
         void add_shader_from_file(ShaderType type, fs::path const& path)
         {
             std::ifstream stream{ path, std::ios::binary };
-            std::string shader_source;
             
             std::ostringstream sstr;
             sstr << stream.rdbuf();
