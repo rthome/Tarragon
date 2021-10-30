@@ -5,6 +5,10 @@
 
 #include <GLFW/glfw3.h>
 
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+
 #include "camera.h"
 #include "clock.h"
 #include "input.h"
@@ -210,6 +214,16 @@ namespace tarragon
         glfwSetMouseButtonCallback(m_pwindow, &Engine::glfw_mousebutton_callback);
         glfwSetCursorPosCallback(m_pwindow, &Engine::glfw_cursorpos_callback);
 
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplGlfw_InitForOpenGL(m_pwindow, false);
+        ImGui_ImplOpenGL3_Init("#version 460");
+
         m_is_initialized = true;
         return true;
     }
@@ -231,7 +245,16 @@ namespace tarragon
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::ShowDemoWindow();
+
         m_pchunk_renderer->draw();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(m_pwindow);
     }

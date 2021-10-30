@@ -21,6 +21,12 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+  imgui
+  GIT_REPOSITORY https://github.com/ocornut/imgui.git
+  GIT_TAG        v1.85
+)
+
+FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
   GIT_TAG        release-1.11.0
@@ -28,7 +34,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 
-FetchContent_MakeAvailable(glfw glm googletest)
+FetchContent_MakeAvailable(glfw glm imgui googletest)
 
 if (MSVC)
     add_compile_options(/W4 )

@@ -18,24 +18,38 @@ set(${TARGET_NAME}_FILES
     include/glad/gl.h src/gl.c
     include/KHR/khrplatform.h
     include/stb/stb_image.h src/stb/stb.cpp
+    include/tarragon-imconfig.h
     src/main.cpp
 )
 
+set(imgui_FILES
+    ${imgui_SOURCE_DIR}/imgui.h ${imgui_SOURCE_DIR}/imgui_internal.h ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_demo.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.h ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.h ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+)
+
 add_executable(${TARGET_NAME})
-target_sources(${TARGET_NAME} PRIVATE ${${TARGET_NAME}_FILES})
+target_sources(${TARGET_NAME} PRIVATE ${${TARGET_NAME}_FILES} ${imgui_FILES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${TARGET_NAME}_FILES})
+cmake_path(GET imgui_SOURCE_DIR PARENT_PATH imgui_PARENT_DIR)
+source_group(TREE ${imgui_PARENT_DIR} FILES ${imgui_FILES})
 
 set_target_properties(${TARGET_NAME} PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
 )
-target_include_directories(${TARGET_NAME} PRIVATE include/)
+target_include_directories(${TARGET_NAME} PRIVATE include/ ${imgui_SOURCE_DIR})
 target_link_libraries(${TARGET_NAME} PUBLIC
     libtg
     glfw
     glm::glm
 )
+target_compile_definitions(${TARGET_NAME} PRIVATE IMGUI_USER_CONFIG="tarragon-imconfig.h")
 
 
 set(TEXTURES
